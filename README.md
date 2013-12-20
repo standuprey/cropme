@@ -48,7 +48,7 @@ The blob will be sent through an event, to catch it inside your app, you can do 
 Demo
 ----
 
-For more details and an example with multiple files, try the (very simple) demo. How to run the demo? Simple...
+Try the (very simple) demo. How to run the demo? Simple...
 
 		git clone git@github.com:standup75/cropme.git
 		cd cropme
