@@ -1,16 +1,18 @@
 {
   "author": "Stanislas Duprey",
-  "name": "audiometa",
-  "description": "Extract type and metadata of audio files",
-  "homepage": "http://github.com/standup75/audiometa",
+  "name": "cropme",
+  "description": "Preview and crop a picture before upload",
+  "homepage": "http://github.com/standup75/cropme",
   "repository": {
     "type": "git",
-    "url": "git://github.com/standup75/audiometa.git"
+    "url": "git://github.com/standup75/cropme.git"
   },
   "main": "./build/audiometa.js",
   "version": "0.0.1",
   "dependencies": {
     "angular": "1.2.0-rc.3",
+    "angular-sanitize": "1.2.0-rc.3",
+    "angular-touch": "1.2.0-rc.3",
     "angular-route": "1.2.0-rc.3"
   },
   "devDependencies": {

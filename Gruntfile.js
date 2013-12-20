@@ -35,9 +35,14 @@ module.exports = function (grunt) {
         files: ['test/spec/{,*/}*.coffee'],
         tasks: ['coffee:test']
       },
+      compass: {
+        files: ['styles/{,*/}*.{scss,sass}'],
+        tasks: ['compass']
+      },
       livereload: {
         files: [
           '.tmp/**/*.js',
+          '.tmp/styles/{,*/}*.css',
           '<%= yeoman.app %>/{,*/}*.html',
           '<%= yeoman.demo %>/styles/{,*/}*.css',
           '<%= yeoman.demo %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
@@ -127,6 +132,21 @@ module.exports = function (grunt) {
         }]
       }
     },
+    compass: {
+      options: {
+        sassDir: 'styles',
+        cssDir: '.tmp/styles',
+        raw: 'http_images_path = "images/"\ngenerated_images_dir = ".tmp/images"\nhttp_generated_images_path = "../images/"',
+        // This doesn't work with relative paths.
+        relativeAssets: false
+      },
+      dist: {},
+      server: {
+        options: {
+          debugInfo: true
+        }
+      }
+    },
     concat: {
       dist: {
         files: {
@@ -143,6 +163,11 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.dist %>',
           dest: '',
           src: [ '*.js' ]
+        }, {
+          expand: true,
+          cwd: '.tmp/styles',
+          dest: '',
+          src: [ '*.css' ]
         }]
       }
     }
@@ -153,6 +178,7 @@ module.exports = function (grunt) {
   grunt.registerTask('server', [
     'clean:server',
     'coffee',
+    'compass:server',
     'livereload-start',
     'connect:livereload',
     'open',
@@ -172,6 +198,7 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'coffee',
+    'compass:dist',
     'concat',
     'copy',
     'test'

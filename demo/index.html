@@ -12,6 +12,7 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/cropme.css">
     <!-- endbuild -->
   </head>
   <body ng-app="cropmeDemo">
@@ -28,7 +29,9 @@
     <div class="container" ng-view></div>
 
     <script src="components/angular/angular.js"></script>
+    <script src="components/angular-sanitize/angular-sanitize.js"></script>
     <script src="components/angular-route/angular-route.js"></script>
+    <script src="components/angular-touch/angular-touch.js"></script>
     <script src="cropme.js"></script>
     <script src="demo/scripts/app.js"></script>
     <script src="demo/scripts/controllers/main.js"></script>
