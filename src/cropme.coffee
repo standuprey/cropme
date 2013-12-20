@@ -222,7 +222,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 				base64ImageData = canvasEl.toDataURL('image/' + scope.type).replace("data:image/#{scope.type};base64,", "")
 				raw = $window.atob base64ImageData
 				blob = new Blob [raw], {type: "image/#{scope.type}"}
-				$rootScope.$broadcast "cropme:upload", blob
+				$rootScope.$broadcast "cropme", blob
 ]
 
 angular.module("cropme").directive "dropbox", ->

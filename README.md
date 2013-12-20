@@ -41,6 +41,10 @@ And don't forget to add the module to your application
 
 		angular.module("myApp", ["cropme"])
 
+The blob will be sent through an event, to catch it inside your app, you can do like this:
+
+		$scope.$on("cropme", function(e, blob) { /* do something with this blob */ });
+
 Demo
 ----
 
