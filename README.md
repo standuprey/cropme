@@ -6,9 +6,10 @@ Drag and drop or select an image, crop it and get the blob, that you can use to 
 Install
 -------
 
-Copy the cropme.js file into your project and add the following line with the correct path:
+Copy the cropme.js and cropme.css file into your project and add the following line with the correct path:
 
 		<script src="/path/to/scripts/cropme.js"></script>
+		<script src="/path/to/scripts/cropme.css"></script>
 
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
@@ -17,7 +18,8 @@ Alternatively, if you're using bower, you can add this to your component.json (o
 
 And add this to your HTML:
 
-    <script src="components/audiometa/cropme.js"></script>
+    <script src="components/cropme/cropme.js"></script>
+    <script src="components/cropme/cropme.css"></script>
 
 
 Usage
@@ -35,12 +37,16 @@ Usage
 - autocrop: (optional) The image you want to crop will be reduced to the value of height if true
 - ratio: (optional) destination-height = ratio x destination-width. So you can either define ratio, or add a destination-height parameter, or none.
 
+And don't forget to add the module to your application
+
+		angular.module("myApp", ["cropme"])
+
 Demo
 ----
 
 For more details and an example with multiple files, try the (very simple) demo. How to run the demo? Simple...
 
-		git clone git@github.com:standup75/audiometa.git
+		git clone git@github.com:standup75/cropme.git
 		cd cropme
 		npm install && bower install
 		grunt server
