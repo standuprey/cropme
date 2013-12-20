@@ -71,7 +71,6 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 	scope: 
 		width: "="
 		destinationWidth: "="
-		filename: "="
 		height: "=?"
 		destinationHeight: "=?"
 		autocrop: "=?"
@@ -90,7 +89,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 
 		startCropping = (imageWidth, imageHeight) ->
 			zoom = scope.width / imageWidth
-			heightWithImage = if scope.autocrop then scope.height else imageHeight * zoom
+			heightWithImage = if scope.autocrop and scope.height then scope.height else imageHeight * zoom
 			scope.widthCropZone = Math.round scope.destinationWidth * zoom
 			scope.heightCropZone = Math.round (scope.destinationHeight || minHeight) * zoom
 			scope.xCropZone = Math.round (scope.width - scope.widthCropZone) / 2
