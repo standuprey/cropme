@@ -101,7 +101,8 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 		$input.bind "change", ->
 			file = @files[0]
 			scope.$apply -> scope.setFiles file
-		$input.bind "click", ->
+		$input.bind "click", (e) ->
+			e.stopPropagation()
 			$input.val ""
 		scope.browseFiles = -> $input[0].click()
 		scope.setFiles = (file) ->

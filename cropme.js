@@ -31,7 +31,6 @@
         scope: {
           width: "=",
           destinationWidth: "=",
-          filename: "=",
           height: "=?",
           destinationHeight: "=?",
           autocrop: "=?",
@@ -51,7 +50,7 @@
           ctx = canvasEl.getContext("2d");
           startCropping = function(imageWidth, imageHeight) {
             zoom = scope.width / imageWidth;
-            heightWithImage = scope.autocrop ? scope.height : imageHeight * zoom;
+            heightWithImage = scope.autocrop && scope.height ? scope.height : imageHeight * zoom;
             scope.widthCropZone = Math.round(scope.destinationWidth * zoom);
             scope.heightCropZone = Math.round((scope.destinationHeight || minHeight) * zoom);
             scope.xCropZone = Math.round((scope.width - scope.widthCropZone) / 2);
@@ -67,7 +66,8 @@
               return scope.setFiles(file);
             });
           });
-          $input.bind("click", function() {
+          $input.bind("click", function(e) {
+            e.stopPropagation();
             return $input.val("");
           });
           scope.browseFiles = function() {
@@ -260,7 +260,7 @@
               blob = new Blob([raw], {
                 type: "image/" + scope.type
               });
-              return $rootScope.$broadcast("cropme:upload", blob);
+              return $rootScope.$broadcast("cropme", blob);
             });
           };
         }
