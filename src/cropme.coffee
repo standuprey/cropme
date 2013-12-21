@@ -1,91 +1,3 @@
-# canvas-toBlob.js
-# * A canvas.toBlob() implementation.
-# * 2011-07-13
-# * 
-# * By Eli Grey, http://eligrey.com and Devin Samarin, https://github.com/eboyjr
-# * License: X11/MIT
-# *   See LICENSE.md
-# 
-
-#global self 
-
-#jslint bitwise: true, regexp: true, confusion: true, es5: true, vars: true, white: true,
-#  plusplus: true 
-
-#! @source http://purl.eligrey.com/github/canvas-toBlob.js/blob/master/canvas-toBlob.js 
-((view) ->
-  "use strict"
-  Uint8Array = view.Uint8Array
-  HTMLCanvasElement = view.HTMLCanvasElement
-  is_base64_regex = /\s*;\s*base64\s*(?:;|$)/i
-  base64_ranks = undefined
-  decode_base64 = (base64) ->
-    len = base64.length
-    buffer = new Uint8Array(len / 4 * 3 | 0)
-    i = 0
-    outptr = 0
-    last = [0, 0]
-    state = 0
-    save = 0
-    rank = undefined
-    code = undefined
-    undef = undefined
-    while len--
-      code = base64.charCodeAt(i++)
-      rank = base64_ranks[code - 43]
-      if rank isnt 255 and rank isnt undef
-        last[1] = last[0]
-        last[0] = code
-        save = (save << 6) | rank
-        state++
-        if state is 4
-          buffer[outptr++] = save >>> 16
-          # padding character 
-          buffer[outptr++] = save >>> 8  if last[1] isnt 61
-          # padding character 
-          buffer[outptr++] = save  if last[0] isnt 61
-          state = 0
-    
-    # 2/3 chance there's going to be some null bytes at the end, but that
-    # doesn't really matter with most image formats.
-    # If it somehow matters for you, truncate the buffer up outptr.
-    buffer
-
-  base64_ranks = new Uint8Array([62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, 0, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51])  if Uint8Array
-  if HTMLCanvasElement and not HTMLCanvasElement::toBlob
-    HTMLCanvasElement::toBlob = (callback, type) -> #, ...args
-      type = "image/png"  unless type
-      if @mozGetAsFile
-        callback @mozGetAsFile("canvas", type)
-        return
-      args = Array::slice.call(arguments, 1)
-      dataURI = @toDataURL.apply(this, args)
-      header_end = dataURI.indexOf(",")
-      data = dataURI.substring(header_end + 1)
-      is_base64 = is_base64_regex.test(dataURI.substring(0, header_end))
-      blob = undefined
-      if Blob.fake
-        
-        # no reason to decode a data: URI that's just going to become a data URI again
-        blob = new Blob
-        if is_base64
-          blob.encoding = "base64"
-        else
-          blob.encoding = "URI"
-        blob.data = data
-        blob.size = data.length
-      else if Uint8Array
-        if is_base64
-          blob = new Blob([decode_base64(data)],
-            type: type
-          )
-        else
-          blob = new Blob([decodeURIComponent(data)],
-            type: type
-          )
-      callback blob
-) self
-
 angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeout", "$rootScope", ($window, $timeout, $rootScope) ->
 
 	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
@@ -150,8 +62,8 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			<button ng-click="ok()">Ok</button>
 		</div>
 		<canvas
-			width="{{croppedWidth}}"
-			height="{{croppedHeight}}"
+			width="{{destinationWidth}}"
+			height="{{destinationHeight}}"
 			ng-style="{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}">
 		</canvas>
 	"""
@@ -307,7 +219,8 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			scope.croppedWidth = scope.widthCropZone / zoom
 			scope.croppedHeight = scope.heightCropZone / zoom
 			$timeout ->
-				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.croppedWidth, scope.croppedHeight
+				destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth
+				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight
 				canvasEl.toBlob (blob) ->
 					$rootScope.$broadcast "cropme", blob
 				, 'image/' + scope.type
@@ -352,3 +265,92 @@ angular.module("cropme").directive "dropbox", ->
 							return scope.setFiles(file)
 						scope.dropError = "Wrong file type, please drop at least an image."
 		), false
+
+
+# canvas-toBlob.js
+# * A canvas.toBlob() implementation.
+# * 2011-07-13
+# * 
+# * By Eli Grey, http://eligrey.com and Devin Samarin, https://github.com/eboyjr
+# * License: X11/MIT
+# *   See LICENSE.md
+# 
+
+#global self 
+
+#jslint bitwise: true, regexp: true, confusion: true, es5: true, vars: true, white: true,
+#  plusplus: true 
+
+#! @source http://purl.eligrey.com/github/canvas-toBlob.js/blob/master/canvas-toBlob.js 
+((view) ->
+  "use strict"
+  Uint8Array = view.Uint8Array
+  HTMLCanvasElement = view.HTMLCanvasElement
+  is_base64_regex = /\s*;\s*base64\s*(?:;|$)/i
+  base64_ranks = undefined
+  decode_base64 = (base64) ->
+    len = base64.length
+    buffer = new Uint8Array(len / 4 * 3 | 0)
+    i = 0
+    outptr = 0
+    last = [0, 0]
+    state = 0
+    save = 0
+    rank = undefined
+    code = undefined
+    undef = undefined
+    while len--
+      code = base64.charCodeAt(i++)
+      rank = base64_ranks[code - 43]
+      if rank isnt 255 and rank isnt undef
+        last[1] = last[0]
+        last[0] = code
+        save = (save << 6) | rank
+        state++
+        if state is 4
+          buffer[outptr++] = save >>> 16
+          # padding character 
+          buffer[outptr++] = save >>> 8  if last[1] isnt 61
+          # padding character 
+          buffer[outptr++] = save  if last[0] isnt 61
+          state = 0
+    
+    # 2/3 chance there's going to be some null bytes at the end, but that
+    # doesn't really matter with most image formats.
+    # If it somehow matters for you, truncate the buffer up outptr.
+    buffer
+
+  base64_ranks = new Uint8Array([62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, 0, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51])  if Uint8Array
+  if HTMLCanvasElement and not HTMLCanvasElement::toBlob
+    HTMLCanvasElement::toBlob = (callback, type) -> #, ...args
+      type = "image/png"  unless type
+      if @mozGetAsFile
+        callback @mozGetAsFile("canvas", type)
+        return
+      args = Array::slice.call(arguments, 1)
+      dataURI = @toDataURL.apply(this, args)
+      header_end = dataURI.indexOf(",")
+      data = dataURI.substring(header_end + 1)
+      is_base64 = is_base64_regex.test(dataURI.substring(0, header_end))
+      blob = undefined
+      if Blob.fake
+        
+        # no reason to decode a data: URI that's just going to become a data URI again
+        blob = new Blob
+        if is_base64
+          blob.encoding = "base64"
+        else
+          blob.encoding = "URI"
+        blob.data = data
+        blob.size = data.length
+      else if Uint8Array
+        if is_base64
+          blob = new Blob([decode_base64(data)],
+            type: type
+          )
+        else
+          blob = new Blob([decodeURIComponent(data)],
+            type: type
+          )
+      callback blob
+) self
