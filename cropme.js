@@ -21,9 +21,8 @@
           throw "Can't initialize cropme: destinationWidth needs to be lower than width";
         }
         if (scope.ratio && !scope.height) {
-          scope.height = scope.destinationHeight;
+          return scope.height = scope.destinationHeight;
         }
-        return scope.type || (scope.type = "png");
       };
       return {
         template: "<div\n	class=\"step-1\"\n	ng-show=\"state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mousedown=\"mousedown($event)\"\n	ng-mouseup=\"mouseup($event)\"\n	ng-mouseleave=\"deselect()\"\n	ng-class=\"{'overflow-hidden': autocrop, 'col-resize': colResizePointer}\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button ng-click=\"cancel()\">Cancel</button>\n	<button ng-click=\"ok()\">Ok</button>\n</div>\n<canvas\n	width=\"{{croppedWidth}}\"\n	height=\"{{croppedHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
@@ -34,8 +33,7 @@
           height: "=?",
           destinationHeight: "=?",
           autocrop: "=?",
-          ratio: "=?",
-          type: "=?"
+          ratio: "=?"
         },
         link: function(scope, element, attributes) {
           var $input, canvasEl, checkBounds, checkHRatio, checkVRatio, ctx, draggingFn, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
@@ -255,10 +253,10 @@
             return $timeout(function() {
               var base64ImageData, blob, raw;
               ctx.drawImage(imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.croppedWidth, scope.croppedHeight);
-              base64ImageData = canvasEl.toDataURL('image/' + scope.type).replace("data:image/" + scope.type + ";base64,", "");
+              base64ImageData = canvasEl.toDataURL('image/jpeg').replace("data:image/jpeg;base64,", "");
               raw = $window.atob(base64ImageData);
               blob = new Blob([raw], {
-                type: "image/" + scope.type
+                type: "image/jpeg"
               });
               return $rootScope.$broadcast("cropme", blob);
             });
@@ -276,7 +274,7 @@
         dragEnterLeave = function(evt) {
           evt.stopPropagation();
           evt.preventDefault();
-          return scope.$apply(function() {
+          return $apply(function() {
             scope.dropText = "Drop files here";
             return scope.dropClass = "";
           });
