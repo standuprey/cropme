@@ -1,4 +1,89 @@
 (function() {
+  (function(view) {
+    "use strict";
+    var HTMLCanvasElement, Uint8Array, base64_ranks, decode_base64, is_base64_regex;
+    Uint8Array = view.Uint8Array;
+    HTMLCanvasElement = view.HTMLCanvasElement;
+    is_base64_regex = /\s*;\s*base64\s*(?:;|$)/i;
+    base64_ranks = void 0;
+    decode_base64 = function(base64) {
+      var buffer, code, i, last, len, outptr, rank, save, state, undef;
+      len = base64.length;
+      buffer = new Uint8Array(len / 4 * 3 | 0);
+      i = 0;
+      outptr = 0;
+      last = [0, 0];
+      state = 0;
+      save = 0;
+      rank = void 0;
+      code = void 0;
+      undef = void 0;
+      while (len--) {
+        code = base64.charCodeAt(i++);
+        rank = base64_ranks[code - 43];
+        if (rank !== 255 && rank !== undef) {
+          last[1] = last[0];
+          last[0] = code;
+          save = (save << 6) | rank;
+          state++;
+          if (state === 4) {
+            buffer[outptr++] = save >>> 16;
+            if (last[1] !== 61) {
+              buffer[outptr++] = save >>> 8;
+            }
+            if (last[0] !== 61) {
+              buffer[outptr++] = save;
+            }
+            state = 0;
+          }
+        }
+      }
+      return buffer;
+    };
+    if (Uint8Array) {
+      base64_ranks = new Uint8Array([62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, 0, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]);
+    }
+    if (HTMLCanvasElement && !HTMLCanvasElement.prototype.toBlob) {
+      return HTMLCanvasElement.prototype.toBlob = function(callback, type) {
+        var args, blob, data, dataURI, header_end, is_base64;
+        if (!type) {
+          type = "image/png";
+        }
+        if (this.mozGetAsFile) {
+          callback(this.mozGetAsFile("canvas", type));
+          return;
+        }
+        args = Array.prototype.slice.call(arguments, 1);
+        dataURI = this.toDataURL.apply(this, args);
+        header_end = dataURI.indexOf(",");
+        data = dataURI.substring(header_end + 1);
+        is_base64 = is_base64_regex.test(dataURI.substring(0, header_end));
+        blob = void 0;
+        if (Blob.fake) {
+          blob = new Blob;
+          if (is_base64) {
+            blob.encoding = "base64";
+          } else {
+            blob.encoding = "URI";
+          }
+          blob.data = data;
+          blob.size = data.length;
+        } else if (Uint8Array) {
+          if (is_base64) {
+            blob = new Blob([decode_base64(data)], {
+              type: type
+            });
+          } else {
+            blob = new Blob([decodeURIComponent(data)], {
+              type: type
+            });
+          }
+        }
+        return callback(blob);
+      };
+    }
+  })(self);
+
   angular.module("cropme", ["ngSanitize"]).directive("cropme", [
     "$window", "$timeout", "$rootScope", function($window, $timeout, $rootScope) {
       var borderSensitivity, checkScopeVariables, minHeight;
@@ -21,8 +106,9 @@
           throw "Can't initialize cropme: destinationWidth needs to be lower than width";
         }
         if (scope.ratio && !scope.height) {
-          return scope.height = scope.destinationHeight;
+          scope.height = scope.destinationHeight;
         }
+        return scope.type || (scope.type = "png");
       };
       return {
         template: "<div\n	class=\"step-1\"\n	ng-show=\"state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mousedown=\"mousedown($event)\"\n	ng-mouseup=\"mouseup($event)\"\n	ng-mouseleave=\"deselect()\"\n	ng-class=\"{'overflow-hidden': autocrop, 'col-resize': colResizePointer}\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button ng-click=\"cancel()\">Cancel</button>\n	<button ng-click=\"ok()\">Ok</button>\n</div>\n<canvas\n	width=\"{{croppedWidth}}\"\n	height=\"{{croppedHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
@@ -33,7 +119,8 @@
           height: "=?",
           destinationHeight: "=?",
           autocrop: "=?",
-          ratio: "=?"
+          ratio: "=?",
+          type: "=?"
         },
         link: function(scope, element, attributes) {
           var $input, canvasEl, checkBounds, checkHRatio, checkVRatio, ctx, draggingFn, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
@@ -251,14 +338,10 @@
             scope.croppedWidth = scope.widthCropZone / zoom;
             scope.croppedHeight = scope.heightCropZone / zoom;
             return $timeout(function() {
-              var base64ImageData, blob, raw;
               ctx.drawImage(imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.croppedWidth, scope.croppedHeight);
-              base64ImageData = canvasEl.toDataURL('image/jpeg').replace("data:image/jpeg;base64,", "");
-              raw = $window.atob(base64ImageData);
-              blob = new Blob([raw], {
-                type: "image/jpeg"
-              });
-              return $rootScope.$broadcast("cropme", blob);
+              return canvasEl.toBlob(function(blob) {
+                return $rootScope.$broadcast("cropme", blob);
+              }, 'image/' + scope.type);
             });
           };
         }
@@ -274,7 +357,7 @@
         dragEnterLeave = function(evt) {
           evt.stopPropagation();
           evt.preventDefault();
-          return $apply(function() {
+          return scope.$apply(function() {
             scope.dropText = "Drop files here";
             return scope.dropClass = "";
           });
