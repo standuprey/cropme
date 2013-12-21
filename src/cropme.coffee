@@ -17,7 +17,6 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			throw "Can't initialize cropme: destinationWidth needs to be lower than width"
 		if scope.ratio and not scope.height
 			scope.height = scope.destinationHeight
-		scope.type ||= "png"
 
 	template: """
 		<div
@@ -75,7 +74,6 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 		destinationHeight: "=?"
 		autocrop: "=?"
 		ratio: "=?"
-		type: "=?"
 	link: (scope, element, attributes) ->
 		scope.dropText = "Drop picture here"
 		scope.state = "step-1"
@@ -220,9 +218,9 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			scope.croppedHeight = scope.heightCropZone / zoom
 			$timeout ->
 				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.croppedWidth, scope.croppedHeight
-				base64ImageData = canvasEl.toDataURL('image/' + scope.type).replace("data:image/#{scope.type};base64,", "")
+				base64ImageData = canvasEl.toDataURL('image/jpeg').replace("data:image/jpeg;base64,", "")
 				raw = $window.atob base64ImageData
-				blob = new Blob [raw], {type: "image/#{scope.type}"}
+				blob = new Blob [raw], {type: "image/jpeg"}
 				$rootScope.$broadcast "cropme", blob
 ]
 
@@ -232,7 +230,7 @@ angular.module("cropme").directive "dropbox", ->
 		dragEnterLeave = (evt) ->
 			evt.stopPropagation()
 			evt.preventDefault()
-			scope.$apply ->
+			$apply ->
 				scope.dropText = "Drop files here"
 				scope.dropClass = ""
 		dropbox = element[0]
