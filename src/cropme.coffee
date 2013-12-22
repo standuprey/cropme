@@ -19,6 +19,19 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			scope.height = scope.destinationHeight
 		scope.type ||= "png"
 
+	offset = (el) ->
+		el = el[0] if el[0]
+		marginTop = window.getComputedStyle(el, null).getPropertyValue("margin-top")
+		marginLeft = window.getComputedStyle(el, null).getPropertyValue("margin-left")
+		offsetTop = -parseInt(marginTop, 10)
+		offsetLeft = -parseInt(marginLeft, 10)
+		while el
+			offsetTop += el.offsetTop
+			offsetLeft += el.offsetLeft
+			el = el.offsetParent
+		top: offsetTop
+		left: offsetLeft
+
 	template: """
 		<div
 			class="step-1"
@@ -183,8 +196,9 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 					checkVRatio()
 
 		isNearBorders = (coords) ->
-			x = scope.xCropZone + imageAreaEl.offsetLeft
-			y = scope.yCropZone + imageAreaEl.offsetTop
+			offset = offset imageAreaEl
+			x = scope.xCropZone + offset.left
+			y = scope.yCropZone + offset.top
 			w = scope.widthCropZone
 			h = scope.heightCropZone
 			topLeft = { x: x, y: y }
@@ -205,7 +219,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			else draggingFn = moveCropZone
 			draggingFn(e)
 		scope.mouseup = (e) -> 
-			draggingFn(e)
+			draggingFn(e) if draggingFn
 			draggingFn = null
 		scope.mousemove = (e) ->
 			draggingFn(e) if draggingFn
