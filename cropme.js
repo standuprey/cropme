@@ -26,17 +26,13 @@
         return scope.type || (scope.type = "png");
       };
       offset = function(el) {
-        var marginLeft, marginTop, offsetLeft, offsetTop;
-        if (el[0]) {
-          el = el[0];
-        }
-        marginTop = window.getComputedStyle(el, null).getPropertyValue("margin-top");
-        marginLeft = window.getComputedStyle(el, null).getPropertyValue("margin-left");
-        offsetTop = -parseInt(marginTop, 10);
-        offsetLeft = -parseInt(marginLeft, 10);
+        var offsetLeft, offsetTop;
+        offsetTop = 0;
+        offsetLeft = 0;
         while (el) {
           offsetTop += el.offsetTop;
           offsetLeft += el.offsetLeft;
+          console.log(el, el.offsetTop, el.offsetLeft);
           el = el.offsetParent;
         }
         return {
@@ -57,13 +53,14 @@
           type: "=?"
         },
         link: function(scope, element, attributes) {
-          var $input, canvasEl, checkBounds, checkHRatio, checkVRatio, ctx, draggingFn, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
+          var $input, canvasEl, checkBounds, checkHRatio, checkVRatio, ctx, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
           scope.dropText = "Drop picture here";
           scope.state = "step-1";
           draggingFn = null;
           grabbedBorder = null;
           heightWithImage = null;
           zoom = null;
+          elOffset = null;
           imageEl = element.find('img')[0];
           canvasEl = element.find("canvas")[0];
           ctx = canvasEl.getContext("2d");
@@ -73,7 +70,10 @@
             scope.widthCropZone = Math.round(scope.destinationWidth * zoom);
             scope.heightCropZone = Math.round((scope.destinationHeight || minHeight) * zoom);
             scope.xCropZone = Math.round((scope.width - scope.widthCropZone) / 2);
-            return scope.yCropZone = Math.round((scope.height - scope.heightCropZone) / 2);
+            scope.yCropZone = Math.round((scope.height - scope.heightCropZone) / 2);
+            return $timeout(function() {
+              return elOffset = offset(imageAreaEl);
+            });
           };
           imageAreaEl = element[0].getElementsByClassName("step-2")[0];
           checkScopeVariables(scope);
@@ -130,14 +130,14 @@
             return reader.readAsDataURL(file);
           };
           moveCropZone = function(coords) {
-            scope.xCropZone = coords.x - imageAreaEl.offsetLeft - scope.widthCropZone / 2;
-            scope.yCropZone = coords.y - imageAreaEl.offsetTop - scope.heightCropZone / 2;
+            scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2;
+            scope.yCropZone = coords.y - elOffset.top - scope.heightCropZone / 2;
             return checkBounds();
           };
           moveBorders = {
             top: function(coords) {
               var y;
-              y = coords.y - imageAreaEl.offsetTop;
+              y = coords.y - elOffset.top;
               scope.heightCropZone += scope.yCropZone - y;
               scope.yCropZone = y;
               checkVRatio();
@@ -145,21 +145,21 @@
             },
             right: function(coords) {
               var x;
-              x = coords.x - imageAreaEl.offsetLeft;
+              x = coords.x - elOffset.left;
               scope.widthCropZone = x - scope.xCropZone;
               checkHRatio();
               return checkBounds();
             },
             bottom: function(coords) {
               var y;
-              y = coords.y - imageAreaEl.offsetTop;
+              y = coords.y - elOffset.top;
               scope.heightCropZone = y - scope.yCropZone;
               checkVRatio();
               return checkBounds();
             },
             left: function(coords) {
               var x;
-              x = coords.x - imageAreaEl.offsetLeft;
+              x = coords.x - elOffset.left;
               scope.widthCropZone += scope.xCropZone - x;
               scope.xCropZone = x;
               checkHRatio();
@@ -209,9 +209,8 @@
           };
           isNearBorders = function(coords) {
             var bottomLeft, bottomRight, h, topLeft, topRight, w, x, y;
-            offset = offset(imageAreaEl);
-            x = scope.xCropZone + offset.left;
-            y = scope.yCropZone + offset.top;
+            x = scope.xCropZone + elOffset.left;
+            y = scope.yCropZone + elOffset.top;
             w = scope.widthCropZone;
             h = scope.heightCropZone;
             topLeft = {
