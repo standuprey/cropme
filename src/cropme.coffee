@@ -100,7 +100,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 
 		startCropping = (imageWidth, imageHeight) ->
 			zoom = scope.width / imageWidth
-			heightWithImage = if scope.height then scope.height else imageHeight * zoom
+			heightWithImage = imageHeight * zoom
 			scope.widthCropZone = Math.round scope.destinationWidth * zoom
 			scope.heightCropZone = Math.round (scope.destinationHeight || minHeight) * zoom
 			scope.xCropZone = Math.round (scope.width - scope.widthCropZone) / 2
@@ -142,29 +142,29 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 				scope.$apply -> scope.imgSrc = e.target.result
 			reader.readAsDataURL(file);
 							
-		moveCropZone = (coords) ->
-			scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2
-			scope.yCropZone = coords.y - elOffset.top - scope.heightCropZone / 2
+		moveCropZone = (ev) ->
+			scope.xCropZone = ev.pageX - elOffset.left - scope.widthCropZone / 2
+			scope.yCropZone = ev.pageY - elOffset.top - scope.heightCropZone / 2
 			checkBounds()
 		moveBorders = 
-			top: (coords) ->
-				y = coords.y - elOffset.top
+			top: (ev) ->
+				y = ev.pageY - elOffset.top
 				scope.heightCropZone += scope.yCropZone - y
 				scope.yCropZone = y
 				checkVRatio()
 				checkBounds()
-			right: (coords) ->
-				x = coords.x - elOffset.left
+			right: (ev) ->
+				x = ev.pageX - elOffset.left
 				scope.widthCropZone = x - scope.xCropZone
 				checkHRatio()
 				checkBounds()
-			bottom: (coords) ->
-				y = coords.y - elOffset.top
+			bottom: (ev) ->
+				y = ev.pageY - elOffset.top
 				scope.heightCropZone = y - scope.yCropZone
 				checkVRatio()
 				checkBounds()
-			left: (coords) ->
-				x = coords.x - elOffset.left
+			left: (ev) ->
+				x = ev.pageX - elOffset.left
 				scope.widthCropZone += scope.xCropZone - x
 				scope.xCropZone = x
 				checkHRatio()
@@ -194,7 +194,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 					scope.yCropZone = 0
 					checkVRatio()
 
-		isNearBorders = (coords) ->
+		isNearBorders = (ev) ->
 			x = scope.xCropZone + elOffset.left
 			y = scope.yCropZone + elOffset.top
 			w = scope.widthCropZone
@@ -203,12 +203,12 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			topRight = { x: x + w, y: y }
 			bottomLeft = { x: x, y: y + h }
 			bottomRight = { x: x + w, y: y + h }
-			nearHSegment(coords, x, w, y, "top") or nearVSegment(coords, y, h, x + w, "right") or nearHSegment(coords, x, w, y + h, "bottom") or nearVSegment(coords, y, h, x, "left")
+			nearHSegment(ev, x, w, y, "top") or nearVSegment(ev, y, h, x + w, "right") or nearHSegment(ev, x, w, y + h, "bottom") or nearVSegment(ev, y, h, x, "left")
 
-		nearHSegment = (coords, x, w, y, borderName) ->
-			borderName if coords.x >= x and coords.x <= x + w and Math.abs(coords.y - y) <= borderSensitivity
-		nearVSegment = (coords, y, h, x, borderName) ->
-			borderName if coords.y >= y and coords.y <= y + h and Math.abs(coords.x - x) <= borderSensitivity
+		nearHSegment = (ev, x, w, y, borderName) ->
+			borderName if ev.pageX >= x and ev.pageX <= x + w and Math.abs(ev.pageY - y) <= borderSensitivity
+		nearVSegment = (ev, y, h, x, borderName) ->
+			borderName if ev.pageY >= y and ev.pageY <= y + h and Math.abs(ev.pageX - x) <= borderSensitivity
 
 		scope.mousedown = (e) ->
 			grabbedBorder = isNearBorders(e)
