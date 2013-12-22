@@ -51,7 +51,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 		<div
 			class="step-2"
 			ng-show="state == 'step-2'"
-			ng-style="{'width': width + 'px', 'height': height + 'px'}"
+			ng-style="{'width': width + 'px'}"
 			ng-mousemove="mousemove($event)"
 			ng-mousedown="mousedown($event)"
 			ng-mouseup="mouseup($event)"
