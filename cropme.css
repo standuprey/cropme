@@ -112,12 +112,17 @@ cropme .overlay-border {
 cropme .step-2 {
   position: relative;
   cursor: crosshair;
+  overflow: hidden;
 }
-/* line 110, ../../styles/cropme.scss */
+/* line 111, ../../styles/cropme.scss */
 cropme .step-2.col-resize {
   cursor: col-resize;
 }
-/* line 112, ../../styles/cropme.scss */
+/* line 113, ../../styles/cropme.scss */
+cropme img {
+  float: left;
+}
+/* line 114, ../../styles/cropme.scss */
 cropme canvas {
   display: none;
 }
