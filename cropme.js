@@ -32,7 +32,6 @@
         while (el) {
           offsetTop += el.offsetTop;
           offsetLeft += el.offsetLeft;
-          console.log(el, el.offsetTop, el.offsetLeft);
           el = el.offsetParent;
         }
         return {
@@ -41,14 +40,14 @@
         };
       };
       return {
-        template: "<div\n	class=\"step-1\"\n	ng-show=\"state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px'}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mousedown=\"mousedown($event)\"\n	ng-mouseup=\"mouseup($event)\"\n	ng-mouseleave=\"deselect()\"\n	ng-class=\"{'overflow-hidden': autocrop, 'col-resize': colResizePointer}\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button ng-click=\"cancel()\">Cancel</button>\n	<button ng-click=\"ok()\">Ok</button>\n</div>\n<canvas\n	width=\"{{destinationWidth}}\"\n	height=\"{{destinationHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
+        template: "<div\n	class=\"step-1\"\n	ng-show=\"state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\" ng-class=\"iconClass\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px'}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mousedown=\"mousedown($event)\"\n	ng-mouseup=\"mouseup($event)\"\n	ng-mouseleave=\"deselect()\"\n	ng-class=\"{'col-resize': colResizePointer}\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button ng-click=\"cancel()\">Cancel</button>\n	<button ng-click=\"ok()\">Ok</button>\n</div>\n<canvas\n	width=\"{{destinationWidth}}\"\n	height=\"{{destinationHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
         restrict: "E",
         scope: {
           width: "=",
           destinationWidth: "=",
           height: "=?",
           destinationHeight: "=?",
-          autocrop: "=?",
+          iconClass: "=?",
           ratio: "=?",
           type: "=?"
         },
@@ -66,7 +65,7 @@
           ctx = canvasEl.getContext("2d");
           startCropping = function(imageWidth, imageHeight) {
             zoom = scope.width / imageWidth;
-            heightWithImage = scope.autocrop && scope.height ? scope.height : imageHeight * zoom;
+            heightWithImage = scope.height ? scope.height : imageHeight * zoom;
             scope.widthCropZone = Math.round(scope.destinationWidth * zoom);
             scope.heightCropZone = Math.round((scope.destinationHeight || minHeight) * zoom);
             scope.xCropZone = Math.round((scope.width - scope.widthCropZone) / 2);

@@ -25,7 +25,6 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 		while el
 			offsetTop += el.offsetTop
 			offsetLeft += el.offsetLeft
-			console.log el, el.offsetTop, el.offsetLeft
 			el = el.offsetParent
 		top: offsetTop
 		left: offsetLeft
@@ -45,7 +44,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 						Browse picture
 				</div>
 				<div class="cropme-or">or</div>
-				<div class="cropme-label">{{dropText}}</div>
+				<div class="cropme-label" ng-class="iconClass">{{dropText}}</div>
 			</div>
 		</div>
 		<div
@@ -56,7 +55,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			ng-mousedown="mousedown($event)"
 			ng-mouseup="mouseup($event)"
 			ng-mouseleave="deselect()"
-			ng-class="{'overflow-hidden': autocrop, 'col-resize': colResizePointer}">
+			ng-class="{'col-resize': colResizePointer}">
 			<img ng-src="{{imgSrc}}" ng-style="{'width': width + 'px'}"/>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}"></div>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}"></div>
@@ -84,7 +83,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 		destinationWidth: "="
 		height: "=?"
 		destinationHeight: "=?"
-		autocrop: "=?"
+		iconClass: "=?"
 		ratio: "=?"
 		type: "=?"
 	link: (scope, element, attributes) ->
@@ -101,7 +100,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 
 		startCropping = (imageWidth, imageHeight) ->
 			zoom = scope.width / imageWidth
-			heightWithImage = if scope.autocrop and scope.height then scope.height else imageHeight * zoom
+			heightWithImage = if scope.height then scope.height else imageHeight * zoom
 			scope.widthCropZone = Math.round scope.destinationWidth * zoom
 			scope.heightCropZone = Math.round (scope.destinationHeight || minHeight) * zoom
 			scope.xCropZone = Math.round (scope.width - scope.widthCropZone) / 2

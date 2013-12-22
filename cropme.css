@@ -98,30 +98,26 @@ cropme dropbox.loading {
   background-color: #aaffaa;
 }
 /* line 98, ../../styles/cropme.scss */
-cropme .overflow-hidden {
-  overflow: hidden;
-}
-/* line 99, ../../styles/cropme.scss */
 cropme .overlay-tile {
   position: absolute;
   opacity: 0.5;
   background-color: #000;
 }
-/* line 104, ../../styles/cropme.scss */
+/* line 103, ../../styles/cropme.scss */
 cropme .overlay-border {
   position: absolute;
   border: 2px solid #328d99;
 }
-/* line 108, ../../styles/cropme.scss */
+/* line 107, ../../styles/cropme.scss */
 cropme .step-2 {
   position: relative;
   cursor: crosshair;
 }
-/* line 111, ../../styles/cropme.scss */
+/* line 110, ../../styles/cropme.scss */
 cropme .step-2.col-resize {
   cursor: col-resize;
 }
-/* line 113, ../../styles/cropme.scss */
+/* line 112, ../../styles/cropme.scss */
 cropme canvas {
   display: none;
 }

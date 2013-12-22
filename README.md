@@ -27,15 +27,19 @@ Usage
 		<cropme
 			width="640"
 			height="400"
-			autocrop="true"
 			ratio="1"
+			icon-class=""
+			type="png"
 			destination-width="300">
 		</cropme>
 
 - width: width of the container. The image you want to crop will be reduced to this width
-- height: (optional) height of the container.
-- autocrop: (optional) The image you want to crop will be reduced to the value of height if true
+- height: (optional) height of the container. Default is 300
+- icon-class: (optional) css class of the icon to be set in the middle of the drop box
+- type: (optional) png or jpeg (might work with webm too, haven't tried it)
 - ratio: (optional) destination-height = ratio x destination-width. So you can either define ratio, or add a destination-height parameter, or none.
+- destination-width: (optional) target (cropped) picture width
+- destination-height: (optional) target (cropped) picture height. Cannot be set if ratio is set.
 
 And don't forget to add the module to your application
 
