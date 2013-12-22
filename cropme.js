@@ -1,7 +1,7 @@
 (function() {
   angular.module("cropme", ["ngSanitize"]).directive("cropme", [
     "$window", "$timeout", "$rootScope", function($window, $timeout, $rootScope) {
-      var borderSensitivity, checkScopeVariables, minHeight;
+      var borderSensitivity, checkScopeVariables, minHeight, offset;
       minHeight = 100;
       borderSensitivity = 8;
       checkScopeVariables = function(scope) {
@@ -24,6 +24,25 @@
           scope.height = scope.destinationHeight;
         }
         return scope.type || (scope.type = "png");
+      };
+      offset = function(el) {
+        var marginLeft, marginTop, offsetLeft, offsetTop;
+        if (el[0]) {
+          el = el[0];
+        }
+        marginTop = window.getComputedStyle(el, null).getPropertyValue("margin-top");
+        marginLeft = window.getComputedStyle(el, null).getPropertyValue("margin-left");
+        offsetTop = -parseInt(marginTop, 10);
+        offsetLeft = -parseInt(marginLeft, 10);
+        while (el) {
+          offsetTop += el.offsetTop;
+          offsetLeft += el.offsetLeft;
+          el = el.offsetParent;
+        }
+        return {
+          top: offsetTop,
+          left: offsetLeft
+        };
       };
       return {
         template: "<div\n	class=\"step-1\"\n	ng-show=\"state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mousedown=\"mousedown($event)\"\n	ng-mouseup=\"mouseup($event)\"\n	ng-mouseleave=\"deselect()\"\n	ng-class=\"{'overflow-hidden': autocrop, 'col-resize': colResizePointer}\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button ng-click=\"cancel()\">Cancel</button>\n	<button ng-click=\"ok()\">Ok</button>\n</div>\n<canvas\n	width=\"{{destinationWidth}}\"\n	height=\"{{destinationHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
@@ -190,8 +209,9 @@
           };
           isNearBorders = function(coords) {
             var bottomLeft, bottomRight, h, topLeft, topRight, w, x, y;
-            x = scope.xCropZone + imageAreaEl.offsetLeft;
-            y = scope.yCropZone + imageAreaEl.offsetTop;
+            offset = offset(imageAreaEl);
+            x = scope.xCropZone + offset.left;
+            y = scope.yCropZone + offset.top;
             w = scope.widthCropZone;
             h = scope.heightCropZone;
             topLeft = {
@@ -232,7 +252,9 @@
             return draggingFn(e);
           };
           scope.mouseup = function(e) {
-            draggingFn(e);
+            if (draggingFn) {
+              draggingFn(e);
+            }
             return draggingFn = null;
           };
           scope.mousemove = function(e) {
