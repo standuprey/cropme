@@ -45,13 +45,23 @@ And don't forget to add the module to your application
 
 		angular.module("myApp", ["cropme"])
 
-The blob will be sent through an event, to catch it inside your app, you can do like this:
-
-		$scope.$on("cropme", function(e, blob) { /* do something with this blob */ });
-
 You can choose to hide the default ok and cancel buttons by adding this to your css
 
 		#cropme-cancel, #cropme-ok { display: none; }
+
+Events Sent
+----------
+
+The blob will be sent through an event, to catch it inside your app, you can do like this:
+
+		$scope.$on("cropme:done", function(e, blob) { /* do something with this blob */ });
+
+Also cropme will send an event when a picture has been chosen by the user, so you can do something like
+
+		$scope.$on("cropme:loaded", function(width, height) { /* do something when the image is loaded */ });
+
+Events Received
+---------------
 
 And you can trigger ok and cancel action by broadcasting the events cropme:cancel and cropme:ok, for example:
 

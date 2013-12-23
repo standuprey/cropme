@@ -137,6 +137,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 						if errors.length
 							scope.dropError = errors.join "<br/>"
 						else
+							$rootScope.$broadcast "cropme:loaded", width, height
 							scope.state = "step-2"
 							startCropping width, height
 				scope.$apply -> scope.imgSrc = e.target.result
@@ -234,7 +235,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 				destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth
 				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight
 				canvasEl.toBlob (blob) ->
-					$rootScope.$broadcast "cropme", blob
+					$rootScope.$broadcast "cropme:done", blob
 				, 'image/' + scope.type
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:cancel", scope.ok
