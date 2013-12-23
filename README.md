@@ -49,6 +49,14 @@ The blob will be sent through an event, to catch it inside your app, you can do 
 
 		$scope.$on("cropme", function(e, blob) { /* do something with this blob */ });
 
+You can choose to hide the default ok and cancel buttons by adding this to your css
+
+		#cropme-cancel, #cropme-ok { display: none; }
+
+And you can trigger ok and cancel action by broadcasting the events cropme:cancel and cropme:ok, for example:
+
+		$scope.$broadcast("cropme:cancel");
+
 Demo
 ----
 
