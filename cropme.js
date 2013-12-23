@@ -117,6 +117,7 @@
                   if (errors.length) {
                     return scope.dropError = errors.join("<br/>");
                   } else {
+                    $rootScope.$broadcast("cropme:loaded", width, height);
                     scope.state = "step-2";
                     return startCropping(width, height);
                   }
@@ -269,7 +270,7 @@
             scope.dropClass = "";
             return scope.state = "step-1";
           };
-          return scope.ok = function() {
+          scope.ok = function() {
             scope.croppedWidth = scope.widthCropZone / zoom;
             scope.croppedHeight = scope.heightCropZone / zoom;
             return $timeout(function() {
@@ -277,10 +278,12 @@
               destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth;
               ctx.drawImage(imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight);
               return canvasEl.toBlob(function(blob) {
-                return $rootScope.$broadcast("cropme", blob);
+                return $rootScope.$broadcast("cropme:done", blob);
               }, 'image/' + scope.type);
             });
           };
+          scope.$on("cropme:cancel", scope.cancel);
+          return scope.$on("cropme:cancel", scope.ok);
         }
       };
     }
