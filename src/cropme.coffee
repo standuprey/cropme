@@ -68,8 +68,8 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			<div class="overlay-border" ng-style="{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
 		</div>
 		<div class="cropme-actions" ng-show="state == 'step-2'">
-			<button id="croppme-cancel" ng-click="cancel()">Cancel</button>
-			<button id="croppme-ok" ng-click="ok()">Ok</button>
+			<button id="cropme-cancel" ng-click="cancel()">Cancel</button>
+			<button id="cropme-ok" ng-click="ok()">Ok</button>
 		</div>
 		<canvas
 			width="{{destinationWidth}}"
