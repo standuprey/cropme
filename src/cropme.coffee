@@ -238,7 +238,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 					$rootScope.$broadcast "cropme:done", blob
 				, 'image/' + scope.type
 		scope.$on "cropme:cancel", scope.cancel
-		scope.$on "cropme:cancel", scope.ok
+		scope.$on "cropme:ok", scope.ok
 ]
 
 angular.module("cropme").directive "dropbox", ->

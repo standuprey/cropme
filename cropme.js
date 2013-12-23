@@ -283,7 +283,7 @@
             });
           };
           scope.$on("cropme:cancel", scope.cancel);
-          return scope.$on("cropme:cancel", scope.ok);
+          return scope.$on("cropme:ok", scope.ok);
         }
       };
     }
