@@ -14,7 +14,7 @@ Copy the cropme.js and cropme.css file into your project and add the following l
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
 
-		"audiometa": "git://github.com/standup75/cropme.git"
+		"cropme": "git://github.com/standup75/cropme.git"
 
 And add this to your HTML:
 
