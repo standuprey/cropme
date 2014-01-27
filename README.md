@@ -67,6 +67,24 @@ And you can trigger ok and cancel action by broadcasting the events cropme:cance
 
 		$scope.$broadcast("cropme:cancel");
 
+So, now, how do I send this image to my server?
+-----------------------------------------------
+
+    scope.$on("cropme:done", function(e, blob) {
+      var xhr = new XMLHttpRequest;
+      xhr.setRequestHeader("Content-Type", blob.type);
+      xhr.onreadystatechange = function(e) {
+        if (this.readyState === 4 && this.status === 200) {
+          return console.log("done");
+        } else if (this.readyState === 4 && this.status !== 200) {
+          return console.log("failed");
+        }
+      };
+      xhr.open("POST", url, true);
+      xhr.send(blob);
+    });
+
+
 Demo
 ----
 
