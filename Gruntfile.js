@@ -178,7 +178,9 @@ module.exports = function (grunt) {
   grunt.registerTask('server', [
     'clean:server',
     'coffee',
+    'concat',
     'compass:server',
+    'copy',
     'livereload-start',
     'connect:livereload',
     'open',
