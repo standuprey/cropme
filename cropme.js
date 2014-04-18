@@ -266,13 +266,17 @@
             return draggingFn = null;
           };
           scope.cancel = function($event) {
-            $event.preventDefault();
+            if ($event) {
+              $event.preventDefault();
+            }
             scope.dropText = "Drop files here";
             scope.dropClass = "";
             return scope.state = "step-1";
           };
           scope.ok = function($event) {
-            $event.preventDefault();
+            if ($event) {
+              $event.preventDefault();
+            }
             scope.croppedWidth = scope.widthCropZone / zoom;
             scope.croppedHeight = scope.heightCropZone / zoom;
             return $timeout(function() {

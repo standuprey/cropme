@@ -68,8 +68,8 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			<div class="overlay-border" ng-style="{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
 		</div>
 		<div class="cropme-actions" ng-show="state == 'step-2'">
-			<button id="cropme-cancel" ng-click="cancel()">Cancel</button>
-			<button id="cropme-ok" ng-click="ok()">Ok</button>
+			<button id="cropme-cancel" ng-click="cancel($event)">Cancel</button>
+			<button id="cropme-ok" ng-click="ok($event)">Ok</button>
 		</div>
 		<canvas
 			width="{{destinationWidth}}"
@@ -224,11 +224,13 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			draggingFn(e) if draggingFn
 			scope.colResizePointer = isNearBorders(e)
 		scope.deselect = -> draggingFn = null
-		scope.cancel = ->
+		scope.cancel = ($event) ->
+			$event.preventDefault() if $event
 			scope.dropText = "Drop files here"
 			scope.dropClass = ""
 			scope.state = "step-1"
-		scope.ok = ->
+		scope.ok = ($event) ->
+			$event.preventDefault() if $event
 			scope.croppedWidth = scope.widthCropZone / zoom
 			scope.croppedHeight = scope.heightCropZone / zoom
 			$timeout ->
