@@ -7,8 +7,8 @@
     "type": "git",
     "url": "git://github.com/standup75/cropme.git"
   },
-  "main": "./build/audiometa.js",
-  "version": "0.0.1",
+  "main": "./dist/cropme.js",
+  "version": "0.1.0",
   "dependencies": {
     "angular": "~1.2.1",
     "angular-sanitize": "~1.2.1",
