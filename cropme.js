@@ -44,7 +44,9 @@
         restrict: "E",
         scope: {
           width: "=",
+          minWidth: "=",
           destinationWidth: "=",
+          minHeight: "=?",
           height: "=?",
           destinationHeight: "=?",
           iconClass: "=?",
@@ -104,14 +106,14 @@
                 width = imageEl.naturalWidth;
                 height = imageEl.naturalHeight;
                 errors = [];
-                if (width < scope.width) {
-                  errors.push("The image you dropped has a width of " + width + ", but the minimum is " + scope.width + ".");
+                if (width < scope.minWidth) {
+                  errors.push("The photo uploaded is too small in width, please try uploading another image");
                 }
-                if (scope.height && height < scope.height) {
-                  errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.height + ".");
+                else if (scope.minHeight && height < scope.minHeight) {
+                    errors.push("The photo uploaded is too small in height, please try uploading another image");
                 }
-                if (scope.ratio && scope.destinationHeight > height) {
-                  errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.destinationHeight + ".");
+                else if (scope.ratio && scope.destinationHeight > height) {
+                  errors.push("The photo uploaded is too small in height, please try uploading another image");
                 }
                 return scope.$apply(function() {
                   if (errors.length) {
