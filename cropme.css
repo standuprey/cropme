@@ -1,10 +1,10 @@
-/* line 19, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000319}}
 cropme {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
 }
-/* line 21, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000321}}
 cropme .step-1 {
   font-family: helvetica, arial, sans-serif;
   position: relative;
@@ -17,14 +17,14 @@ cropme .step-1 {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-/* line 31, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000331}}
 cropme .cropme-file-input {
   position: absolute;
   top: 20%;
   left: 50%;
   width: 0;
 }
-/* line 37, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000337}}
 cropme input[type=file] {
   opacity: 0;
   position: absolute;
@@ -32,7 +32,7 @@ cropme input[type=file] {
   left: 0;
   right: 0;
 }
-/* line 44, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000344}}
 cropme .cropme-button {
   font-weight: bold;
   cursor: pointer;
@@ -47,12 +47,12 @@ cropme .cropme-button {
   -moz-box-shadow: #cccccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
   box-shadow: #cccccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
 }
-/* line 55, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000355}}
 cropme .cropme-button:hover {
   background: #3799a6;
   color: #e6fafc;
 }
-/* line 60, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000360}}
 cropme .cropme-or {
   pointer-events: none;
   text-align: center;
@@ -61,7 +61,7 @@ cropme .cropme-or {
   width: 20px;
   margin-left: -10px;
 }
-/* line 68, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000368}}
 cropme .cropme-label {
   margin-top: 25px;
   width: 150px;
@@ -70,13 +70,13 @@ cropme .cropme-label {
   text-align: center;
   color: #444444;
 }
-/* line 76, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000376}}
 cropme .cropme-error {
   margin-top: 10px;
   text-align: center;
   color: #da4b3e;
 }
-/* line 81, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000381}}
 cropme dropbox {
   display: block;
   position: absolute;
@@ -85,44 +85,44 @@ cropme dropbox {
   right: 0;
   bottom: 0;
 }
-/* line 88, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000388}}
 cropme dropbox.not-available {
   background-color: #fff0f0;
 }
-/* line 91, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000391}}
 cropme dropbox.over {
   background-color: #e5ffea;
 }
-/* line 94, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000394}}
 cropme dropbox.loading {
   background-color: #aaffaa;
 }
-/* line 98, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\0000398}}
 cropme .overlay-tile {
   position: absolute;
   opacity: 0.5;
   background-color: #000;
 }
-/* line 103, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\00003103}}
 cropme .overlay-border {
   position: absolute;
   border: 2px solid #328d99;
 }
-/* line 107, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\00003107}}
 cropme .step-2 {
   position: relative;
   cursor: crosshair;
   overflow: hidden;
 }
-/* line 111, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\00003111}}
 cropme .step-2.col-resize {
   cursor: col-resize;
 }
-/* line 113, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\00003113}}
 cropme img {
   float: left;
 }
-/* line 114, ../../styles/cropme.scss */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/standup75\/Code\/cropme\/styles\/cropme\.scss}line{font-family:\00003114}}
 cropme canvas {
   display: none;
 }

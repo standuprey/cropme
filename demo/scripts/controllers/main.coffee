@@ -1,4 +1,4 @@
 "use strict"
 angular.module("cropmeDemo").controller "MainCtrl", ($scope) ->
-	$scope.$on "cropme", (e, blob) ->
+	$scope.$on "cropme:done", (e, blob) ->
 		console.log blob
