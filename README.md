@@ -9,7 +9,7 @@ Install
 Copy the cropme.js and cropme.css file into your project and add the following line with the correct path:
 
 		<script src="/path/to/scripts/cropme.js"></script>
-		<script src="/path/to/scripts/cropme.css"></script>
+		<link rel="stylesheet" href="/path/to/scripts/cropme.css">
 
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
@@ -23,7 +23,7 @@ Or simply run
 And add this to your HTML:
 
     <script src="components/cropme/cropme.js"></script>
-    <script src="components/cropme/cropme.css"></script>
+		<link rel="stylesheet" href="components/cropme/cropme.css">
 
 
 Usage
