@@ -1,4 +1,4 @@
-angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeout", "$rootScope", ($window, $timeout, $rootScope) ->
+angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cropme", ($swipe, $window, $timeout, $rootScope) ->
 
 	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
 	borderSensitivity = 8 # grab area size around the borders in pixels
@@ -52,8 +52,6 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			ng-show="state == 'step-2'"
 			ng-style="{'width': width + 'px'}"
 			ng-mousemove="mousemove($event)"
-			ng-mousedown="mousedown($event)"
-			ng-mouseup="mouseup($event)"
 			ng-mouseleave="deselect()"
 			ng-class="{'col-resize': colResizePointer}">
 			<img ng-src="{{imgSrc}}" ng-style="{'width': width + 'px'}"/>
@@ -143,29 +141,30 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 				scope.$apply -> scope.imgSrc = e.target.result
 			reader.readAsDataURL(file);
 							
-		moveCropZone = (ev) ->
-			scope.xCropZone = ev.pageX - elOffset.left - scope.widthCropZone / 2
-			scope.yCropZone = ev.pageY - elOffset.top - scope.heightCropZone / 2
+		moveCropZone = (coords) ->
+			scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2
+			scope.yCropZone = coords.y - elOffset.top - scope.heightCropZone / 2
 			checkBounds()
 		moveBorders = 
-			top: (ev) ->
-				y = ev.pageY - elOffset.top
+			top: (coords) ->
+				y = coords.y - elOffset.top
 				scope.heightCropZone += scope.yCropZone - y
 				scope.yCropZone = y
 				checkVRatio()
 				checkBounds()
-			right: (ev) ->
-				x = ev.pageX - elOffset.left
+			right: (coords) ->
+				x = coords.x - elOffset.left
 				scope.widthCropZone = x - scope.xCropZone
 				checkHRatio()
 				checkBounds()
-			bottom: (ev) ->
-				y = ev.pageY - elOffset.top
+			bottom: (coords) ->
+				y = coords.y - elOffset.top
+				console.log y, coords.y, elOffset.top
 				scope.heightCropZone = y - scope.yCropZone
 				checkVRatio()
 				checkBounds()
-			left: (ev) ->
-				x = ev.pageX - elOffset.left
+			left: (coords) ->
+				x = coords.x - elOffset.left
 				scope.widthCropZone += scope.xCropZone - x
 				scope.xCropZone = x
 				checkHRatio()
@@ -195,7 +194,7 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 					scope.yCropZone = 0
 					checkVRatio()
 
-		isNearBorders = (ev) ->
+		isNearBorders = (coords) ->
 			x = scope.xCropZone + elOffset.left
 			y = scope.yCropZone + elOffset.top
 			w = scope.widthCropZone
@@ -204,25 +203,33 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 			topRight = { x: x + w, y: y }
 			bottomLeft = { x: x, y: y + h }
 			bottomRight = { x: x + w, y: y + h }
-			nearHSegment(ev, x, w, y, "top") or nearVSegment(ev, y, h, x + w, "right") or nearHSegment(ev, x, w, y + h, "bottom") or nearVSegment(ev, y, h, x, "left")
+			nearHSegment(coords, x, w, y, "top") or nearVSegment(coords, y, h, x + w, "right") or nearHSegment(coords, x, w, y + h, "bottom") or nearVSegment(coords, y, h, x, "left")
 
-		nearHSegment = (ev, x, w, y, borderName) ->
-			borderName if ev.pageX >= x and ev.pageX <= x + w and Math.abs(ev.pageY - y) <= borderSensitivity
-		nearVSegment = (ev, y, h, x, borderName) ->
-			borderName if ev.pageY >= y and ev.pageY <= y + h and Math.abs(ev.pageX - x) <= borderSensitivity
+		nearHSegment = (coords, x, w, y, borderName) ->
+			borderName if coords.x >= x and coords.x <= x + w and Math.abs(coords.y - y) <= borderSensitivity
+		nearVSegment = (coords, y, h, x, borderName) ->
+			borderName if coords.y >= y and coords.y <= y + h and Math.abs(coords.x - x) <= borderSensitivity
 
-		scope.mousedown = (e) ->
-			grabbedBorder = isNearBorders(e)
-			if grabbedBorder
-				draggingFn = moveBorders[grabbedBorder]
-			else draggingFn = moveCropZone
-			draggingFn(e)
-		scope.mouseup = (e) -> 
-			draggingFn(e) if draggingFn
-			draggingFn = null
+		dragIt = (coords) ->
+			if draggingFn
+				scope.$apply -> draggingFn(coords)
+
 		scope.mousemove = (e) ->
-			draggingFn(e) if draggingFn
-			scope.colResizePointer = isNearBorders(e)
+			scope.colResizePointer = isNearBorders({x: e.pageX, y:e.pageY})
+
+		$swipe.bind angular.element(element[0].getElementsByClassName('step-2')[0]),
+			'start': (coords) ->
+				grabbedBorder = isNearBorders coords
+				if grabbedBorder
+					draggingFn = moveBorders[grabbedBorder]
+				else draggingFn = moveCropZone
+				dragIt coords
+			'move': (coords) ->
+				dragIt coords
+			'end': (coords) ->
+				dragIt coords
+				draggingFn = null
+
 		scope.deselect = -> draggingFn = null
 		scope.cancel = ($event) ->
 			$event.preventDefault() if $event
@@ -237,11 +244,10 @@ angular.module("cropme", ["ngSanitize"]).directive "cropme", ["$window", "$timeo
 				destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth
 				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight
 				canvasEl.toBlob (blob) ->
-					$rootScope.$broadcast "cropme:done", blob, canvasEl
+					$rootScope.$broadcast "cropme:done", blob
 				, 'image/' + scope.type
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok
-]
 
 angular.module("cropme").directive "dropbox", ->
 	restrict: "E"

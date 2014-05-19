@@ -13,7 +13,8 @@
     "angular": "~1.2.1",
     "angular-sanitize": "~1.2.1",
     "angular-touch": "~1.2.1",
-    "angular-route": "~1.2.1"
+    "angular-route": "~1.2.1",
+    "angular-superswipe": "git://github.com/standup75/superswipe.git"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.1",

@@ -6,7 +6,7 @@ Drag and drop or select an image, crop it and get the blob, that you can use to 
 Install
 -------
 
-Copy the cropme.js and cropme.css file into your project and add the following line with the correct path:
+Copy the cropme.js and cropme.css files into your project and add the following line with the correct path:
 
 		<script src="/path/to/scripts/cropme.js"></script>
 		<link rel="stylesheet" href="/path/to/scripts/cropme.css">
@@ -20,9 +20,17 @@ Or simply run
 
 		bower install angular-cropme
 
+Add the dependencies to your html:
+
+		<script src="components/angular/angular.js"></script>
+		<script src="components/angular-sanitize/angular-sanitize.js"></script>
+		<script src="components/angular-route/angular-route.js"></script>
+		<script src="components/angular-touch/angular-touch.js"></script>
+
+
 And add this to your HTML:
 
-    <script src="components/cropme/cropme.js"></script>
+		<script src="components/cropme/cropme.js"></script>
 		<link rel="stylesheet" href="components/cropme/cropme.css">
 
 
@@ -53,11 +61,6 @@ You can choose to hide the default ok and cancel buttons by adding this to your 
 
 		#cropme-cancel, #cropme-ok { display: none; }
 
-Limitation
-----------
-
-One that I am aware of: cropme does not support touch event. Made a quick try using ngtouch $swipe but it seems to detect only horizontal movements, no vertical (see https://gist.github.com/standup75/b2a600aba10d957dbaf0 if you're curious...)
-
 Events Sent
 ----------
 
@@ -79,19 +82,19 @@ And you can trigger ok and cancel action by broadcasting the events cropme:cance
 So, now, how do I send this image to my server?
 -----------------------------------------------
 
-    scope.$on("cropme:done", function(e, blob) {
-      var xhr = new XMLHttpRequest;
-      xhr.setRequestHeader("Content-Type", blob.type);
-      xhr.onreadystatechange = function(e) {
-        if (this.readyState === 4 && this.status === 200) {
-          return console.log("done");
-        } else if (this.readyState === 4 && this.status !== 200) {
-          return console.log("failed");
-        }
-      };
-      xhr.open("POST", url, true);
-      xhr.send(blob);
-    });
+		scope.$on("cropme:done", function(e, blob) {
+			var xhr = new XMLHttpRequest;
+			xhr.setRequestHeader("Content-Type", blob.type);
+			xhr.onreadystatechange = function(e) {
+				if (this.readyState === 4 && this.status === 200) {
+					return console.log("done");
+				} else if (this.readyState === 4 && this.status !== 200) {
+					return console.log("failed");
+				}
+			};
+			xhr.open("POST", url, true);
+			xhr.send(blob);
+		});
 
 
 Demo
