@@ -63,7 +63,7 @@ Events Sent
 
 The blob will be sent through an event, to catch it inside your app, you can do like this:
 
-		$scope.$on("cropme:done", function(e, blob) { /* do something with this blob */ });
+		$scope.$on("cropme:done", function(e, blob, canvasEl) { /* do something */ });
 
 Also cropme will send an event when a picture has been chosen by the user, so you can do something like
 

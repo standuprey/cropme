@@ -284,7 +284,7 @@
               destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth;
               ctx.drawImage(imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight);
               return canvasEl.toBlob(function(blob) {
-                return $rootScope.$broadcast("cropme:done", blob);
+                return $rootScope.$broadcast("cropme:done", blob, canvasEl);
               }, 'image/' + scope.type);
             });
           };
