@@ -53,6 +53,11 @@ You can choose to hide the default ok and cancel buttons by adding this to your 
 
 		#cropme-cancel, #cropme-ok { display: none; }
 
+Limitation
+----------
+
+One that I am aware of: cropme does not support touch event. Made a quick try using ngtouch $swipe but it seems to detect only horizontal movements, no vertical (see https://gist.github.com/standup75/b2a600aba10d957dbaf0 if you're curious...)
+
 Events Sent
 ----------
 
