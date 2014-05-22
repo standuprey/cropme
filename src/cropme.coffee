@@ -3,22 +3,6 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
 	borderSensitivity = 8 # grab area size around the borders in pixels
 
-	checkScopeVariables = (scope) ->
-		if scope.destinationHeight
-			if scope.ratio
-				throw "You can't specify both destinationHeight and ratio, destinationHeight = destinationWidth * ratio"
-			else
-				scope.ratio = destinationHeight / destinationWidth
-		else if scope.ratio
-			scope.destinationHeight = scope.destinationWidth * scope.ratio
-		if scope.ratio and scope.height and scope.destinationHeight > scope.height
-			throw "Can't initialize cropme: destinationWidth x ratio needs to be lower than height"
-		if scope.destinationWidth > scope.width
-			throw "Can't initialize cropme: destinationWidth needs to be lower than width"
-		if scope.ratio and not scope.height
-			scope.height = scope.destinationHeight
-		scope.type ||= "png"
-
 	offset = (el) ->
 		offsetTop = 0
 		offsetLeft = 0
@@ -77,7 +61,7 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 	"""
 	restrict: "E"
 	scope: 
-		width: "="
+		width: "=?"
 		destinationWidth: "="
 		height: "=?"
 		destinationHeight: "=?"
@@ -105,8 +89,27 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 			scope.yCropZone = Math.round (scope.height - scope.heightCropZone) / 2
 			$timeout -> elOffset = offset imageAreaEl
 
+		checkScopeVariables = ->
+			unless scope.width
+				scope.width = element[0].offsetWidth
+				scope.height = element[0].offsetHeight  unless scope.ratio || scope.height
+			if scope.destinationHeight
+				if scope.ratio
+					throw "You can't specify both destinationHeight and ratio, destinationHeight = destinationWidth * ratio"
+				else
+					scope.ratio = destinationHeight / destinationWidth
+			else if scope.ratio
+				scope.destinationHeight = scope.destinationWidth * scope.ratio
+			if scope.ratio and scope.height and scope.destinationHeight > scope.height
+				throw "Can't initialize cropme: destinationWidth x ratio needs to be lower than height"
+			if scope.destinationWidth > scope.width
+				throw "Can't initialize cropme: destinationWidth needs to be lower than width"
+			if scope.ratio and not scope.height
+				scope.height = scope.width * scope.ratio
+			scope.type ||= "png"
+
 		imageAreaEl = element[0].getElementsByClassName("step-2")[0]
-		checkScopeVariables scope
+		checkScopeVariables()
 		$input = element.find("input")
 		$input.bind "change", ->
 			file = @files[0]

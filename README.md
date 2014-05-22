@@ -45,7 +45,7 @@ Usage
 			destination-width="300">
 		</cropme>
 
-- width: width of the container. The image you want to crop will be reduced to this width
+- width: (optional) width of the container. The image you want to crop will be reduced to this width. Omit the width to make the box fit the size of the parent container
 - height: (optional) height of the container. Default is 300
 - icon-class: (optional) css class of the icon to be set in the middle of the drop box
 - type: (optional) png or jpeg (might work with webm too, haven't tried it)
