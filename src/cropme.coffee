@@ -1,9 +1,6 @@
-angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cropme", ($swipe, $window, $timeout, $rootScope) ->
-
-	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
-	borderSensitivity = 8 # grab area size around the borders in pixels
-
-	offset = (el) ->
+angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).service "elementOffset", ->
+	(el) ->
+		el = el[0] if el[0]
 		offsetTop = 0
 		offsetLeft = 0
 		while el
@@ -12,6 +9,11 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 			el = el.offsetParent
 		top: offsetTop
 		left: offsetLeft
+
+angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootScope, elementOffset) ->
+
+	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
+	borderSensitivity = 8 # grab area size around the borders in pixels
 
 	template: """
 		<div
@@ -88,7 +90,7 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 			scope.heightCropZone = Math.round (scope.destinationHeight || minHeight) * zoom
 			scope.xCropZone = Math.round (scope.width - scope.widthCropZone) / 2
 			scope.yCropZone = Math.round (scope.height - scope.heightCropZone) / 2
-			$timeout -> elOffset = offset imageAreaEl
+			$timeout -> elOffset = elementOffset imageAreaEl
 
 		checkScopeVariables = ->
 			unless scope.width
@@ -163,7 +165,6 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 				checkBounds()
 			bottom: (coords) ->
 				y = coords.y - elOffset.top
-				console.log y, coords.y, elOffset.top
 				scope.heightCropZone = y - scope.yCropZone
 				checkVRatio()
 				checkBounds()
@@ -253,16 +254,20 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok
 
-angular.module("cropme").directive "dropbox", ->
+angular.module("cropme").directive "dropbox", (elementOffset) ->
 	restrict: "E"
 	link: (scope, element, attributes) ->
-		dragEnterLeave = (evt) ->
+		offset = elementOffset element
+		reset = (evt) ->
 			evt.stopPropagation()
 			evt.preventDefault()
 			scope.$apply ->
 				scope.dragOver = false
 				scope.dropText = "Drop files here"
 				scope.dropClass = ""
+		dragEnterLeave = (evt) ->
+			return if evt.x > offset.left and evt.x < offset.left + element[0].offsetWidth and evt.y > offset.top and evt.y < offset.top + element[0].offsetHeight
+			reset evt
 		dropbox = element[0]
 		scope.dropText = "Drop files here"
 		scope.dragOver = false
@@ -279,11 +284,7 @@ angular.module("cropme").directive "dropbox", ->
 
 		), false
 		dropbox.addEventListener "drop", ((evt) ->
-			evt.stopPropagation()
-			evt.preventDefault()
-			scope.$apply ->
-				scope.dropText = "Drop files here"
-				scope.dropClass = ""
+			reset evt
 
 			files = evt.dataTransfer.files
 			scope.$apply ->
