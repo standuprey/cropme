@@ -1,13 +1,14 @@
 {
   "name": "angular-superswipe",
   "homepage": "https://github.com/standup75/superswipe",
-  "_release": "c9218262f0",
+  "version": "0.0.1",
+  "_release": "0.0.1",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
+    "type": "version",
+    "tag": "0.0.1",
     "commit": "c9218262f05b5a92f11b845d7476dc28c4fcaf0b"
   },
   "_source": "git://github.com/standup75/superswipe.git",
-  "_target": "*",
-  "_originalSource": "git://github.com/standup75/superswipe.git"
+  "_target": "~0.0.1",
+  "_originalSource": "angular-superswipe"
 }

@@ -1,29 +1,8 @@
 (function() {
   angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive("cropme", function($swipe, $window, $timeout, $rootScope) {
-    var borderSensitivity, checkScopeVariables, minHeight, offset;
+    var borderSensitivity, minHeight, offset;
     minHeight = 100;
     borderSensitivity = 8;
-    checkScopeVariables = function(scope) {
-      if (scope.destinationHeight) {
-        if (scope.ratio) {
-          throw "You can't specify both destinationHeight and ratio, destinationHeight = destinationWidth * ratio";
-        } else {
-          scope.ratio = destinationHeight / destinationWidth;
-        }
-      } else if (scope.ratio) {
-        scope.destinationHeight = scope.destinationWidth * scope.ratio;
-      }
-      if (scope.ratio && scope.height && scope.destinationHeight > scope.height) {
-        throw "Can't initialize cropme: destinationWidth x ratio needs to be lower than height";
-      }
-      if (scope.destinationWidth > scope.width) {
-        throw "Can't initialize cropme: destinationWidth needs to be lower than width";
-      }
-      if (scope.ratio && !scope.height) {
-        scope.height = scope.destinationHeight;
-      }
-      return scope.type || (scope.type = "png");
-    };
     offset = function(el) {
       var offsetLeft, offsetTop;
       offsetTop = 0;
@@ -42,7 +21,7 @@
       template: "<div\n	class=\"step-1\"\n	ng-show=\"state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\" ng-class=\"iconClass\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px'}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mouseleave=\"deselect()\"\n	ng-class=\"{'col-resize': colResizePointer}\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button id=\"cropme-cancel\" ng-click=\"cancel($event)\">Cancel</button>\n	<button id=\"cropme-ok\" ng-click=\"ok($event)\">Ok</button>\n</div>\n<canvas\n	width=\"{{destinationWidth}}\"\n	height=\"{{destinationHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
       restrict: "E",
       scope: {
-        width: "=",
+        width: "=?",
         destinationWidth: "=",
         height: "=?",
         destinationHeight: "=?",
@@ -51,7 +30,7 @@
         type: "=?"
       },
       link: function(scope, element, attributes) {
-        var $input, canvasEl, checkBounds, checkHRatio, checkVRatio, ctx, dragIt, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
+        var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
         scope.dropText = "Drop picture here";
         scope.state = "step-1";
         draggingFn = null;
@@ -73,8 +52,35 @@
             return elOffset = offset(imageAreaEl);
           });
         };
+        checkScopeVariables = function() {
+          if (!scope.width) {
+            scope.width = element[0].offsetWidth;
+            if (!(scope.ratio || scope.height)) {
+              scope.height = element[0].offsetHeight;
+            }
+          }
+          if (scope.destinationHeight) {
+            if (scope.ratio) {
+              throw "You can't specify both destinationHeight and ratio, destinationHeight = destinationWidth * ratio";
+            } else {
+              scope.ratio = destinationHeight / destinationWidth;
+            }
+          } else if (scope.ratio) {
+            scope.destinationHeight = scope.destinationWidth * scope.ratio;
+          }
+          if (scope.ratio && scope.height && scope.destinationHeight > scope.height) {
+            throw "Can't initialize cropme: destinationWidth x ratio needs to be lower than height";
+          }
+          if (scope.destinationWidth > scope.width) {
+            throw "Can't initialize cropme: destinationWidth needs to be lower than width";
+          }
+          if (scope.ratio && !scope.height) {
+            scope.height = scope.width * scope.ratio;
+          }
+          return scope.type || (scope.type = "png");
+        };
         imageAreaEl = element[0].getElementsByClassName("step-2")[0];
-        checkScopeVariables(scope);
+        checkScopeVariables();
         $input = element.find("input");
         $input.bind("change", function() {
           var file;
