@@ -26,6 +26,7 @@ Add the dependencies to your html:
 		<script src="components/angular-sanitize/angular-sanitize.js"></script>
 		<script src="components/angular-route/angular-route.js"></script>
 		<script src="components/angular-touch/angular-touch.js"></script>
+		<script src="components/angular-superswipe/angular-superswipe.js"></script>
 
 
 And add this to your HTML:
