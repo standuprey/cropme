@@ -24,6 +24,7 @@ angular.module("cropme", ["ngSanitize", "ngTouch", "superswipe"]).directive "cro
 				<input type="file"/>
 				<div
 					class="cropme-button"
+					ng-class="{deactivated: dragOver}"
 					ng-click="browseFiles()">
 						Browse picture
 				</div>
@@ -259,10 +260,12 @@ angular.module("cropme").directive "dropbox", ->
 			evt.stopPropagation()
 			evt.preventDefault()
 			scope.$apply ->
+				scope.dragOver = false
 				scope.dropText = "Drop files here"
 				scope.dropClass = ""
 		dropbox = element[0]
 		scope.dropText = "Drop files here"
+		scope.dragOver = false
 		dropbox.addEventListener "dragenter", dragEnterLeave, false
 		dropbox.addEventListener "dragleave", dragEnterLeave, false
 		dropbox.addEventListener "dragover", ((evt) ->
@@ -270,6 +273,7 @@ angular.module("cropme").directive "dropbox", ->
 			evt.preventDefault()
 			ok = evt.dataTransfer and evt.dataTransfer.types and evt.dataTransfer.types.indexOf("Files") >= 0
 			scope.$apply ->
+				scope.dragOver = true
 				scope.dropText = (if ok then "Drop now" else "Only files are allowed")
 				scope.dropClass = (if ok then "over" else "not-available")
 

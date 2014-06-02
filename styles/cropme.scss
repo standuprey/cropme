@@ -65,6 +65,10 @@ cropme {
 			background: $color_alt;
 			color: $text_color_inverse_alt;
 		}
+		&.deactivated {
+			opacity: 0.5;
+			pointer-events: none;
+		}
 	}
 	.cropme-or {
 		pointer-events: none;
