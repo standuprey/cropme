@@ -30,7 +30,7 @@ Add the dependencies to your html:
 
 And add this to your HTML:
 
-		<script src="components/cropme/cropme.js"></script>
+		<script src="components/angular-cropme/cropme.js"></script>
 		<link rel="stylesheet" href="components/cropme/cropme.css">
 
 
