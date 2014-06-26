@@ -53,6 +53,7 @@ Usage
 - ratio: (optional) destination-height = ratio x destination-width. So you can either define ratio, or add a destination-height parameter, or none.
 - destination-width: (optional) target (cropped) picture width
 - destination-height: (optional) target (cropped) picture height. Cannot be set if ratio is set.
+- src: (optional) url of the image to preload (skips file selection)
 
 And don't forget to add the module to your application
 
