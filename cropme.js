@@ -33,7 +33,8 @@
         destinationHeight: "=?",
         iconClass: "=?",
         ratio: "=?",
-        type: "=?"
+        type: "=?",
+        src: "=?"
       },
       link: function(scope, element, attributes) {
         var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
@@ -47,6 +48,9 @@
         imageEl = element.find('img')[0];
         canvasEl = element.find("canvas")[0];
         ctx = canvasEl.getContext("2d");
+        if (scope.src) {
+          setFile(scope.src);
+        }
         startCropping = function(imageWidth, imageHeight) {
           zoom = scope.width / imageWidth;
           heightWithImage = imageHeight * zoom;

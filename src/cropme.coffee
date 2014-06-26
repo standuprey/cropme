@@ -71,6 +71,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		iconClass: "=?"
 		ratio: "=?"
 		type: "=?"
+		src: "@?"
 	link: (scope, element, attributes) ->
 		scope.dropText = "Drop picture here"
 		scope.state = "step-1"
@@ -126,26 +127,28 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				return scope.dropError = "Wrong file type, please select an image."
 			scope.dropError = ""
 			reader = new FileReader
-			reader.onload = (e) ->
-				imageEl.onload = ->
-					width = imageEl.naturalWidth
-					height = imageEl.naturalHeight
-					errors = []
-					if width < scope.width
-						errors.push "The image you dropped has a width of #{width}, but the minimum is #{scope.width}."
-					if scope.height and height < scope.height
-						errors.push "The image you dropped has a height of #{height}, but the minimum is #{scope.height}."
-					if scope.ratio and scope.destinationHeight > height
-						errors.push "The image you dropped has a height of #{height}, but the minimum is #{scope.destinationHeight}."
-					scope.$apply ->
-						if errors.length
-							scope.dropError = errors.join "<br/>"
-						else
-							$rootScope.$broadcast "cropme:loaded", width, height
-							scope.state = "step-2"
-							startCropping width, height
-				scope.$apply -> scope.imgSrc = e.target.result
+			reader.onload = (e) -> 
+				scope.$apply -> loadImage e.target.result
 			reader.readAsDataURL(file);
+		loadImage = (src) ->
+			imageEl.onload = ->
+				width = imageEl.naturalWidth
+				height = imageEl.naturalHeight
+				errors = []
+				if width < scope.width
+					errors.push "The image you dropped has a width of #{width}, but the minimum is #{scope.width}."
+				if scope.height and height < scope.height
+					errors.push "The image you dropped has a height of #{height}, but the minimum is #{scope.height}."
+				if scope.ratio and scope.destinationHeight > height
+					errors.push "The image you dropped has a height of #{height}, but the minimum is #{scope.destinationHeight}."
+				scope.$apply ->
+					if errors.length
+						scope.dropError = errors.join "<br/>"
+					else
+						$rootScope.$broadcast "cropme:loaded", width, height
+						startCropping width, height
+			scope.state = "step-2"
+			scope.imgSrc = src
 							
 		moveCropZone = (coords) ->
 			scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2
@@ -253,6 +256,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				, 'image/' + scope.type
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok
+		loadImage(scope.src) if scope.src
 
 angular.module("cropme").directive "dropbox", (elementOffset) ->
 	restrict: "E"
