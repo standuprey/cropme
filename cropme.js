@@ -34,10 +34,10 @@
         iconClass: "=?",
         ratio: "=?",
         type: "=?",
-        src: "=?"
+        src: "@?"
       },
       link: function(scope, element, attributes) {
-        var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
+        var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
         scope.dropText = "Drop picture here";
         scope.state = "step-1";
         draggingFn = null;
@@ -48,9 +48,6 @@
         imageEl = element.find('img')[0];
         canvasEl = element.find("canvas")[0];
         ctx = canvasEl.getContext("2d");
-        if (scope.src) {
-          setFile(scope.src);
-        }
         startCropping = function(imageWidth, imageHeight) {
           zoom = scope.width / imageWidth;
           heightWithImage = imageHeight * zoom;
@@ -114,35 +111,38 @@
           scope.dropError = "";
           reader = new FileReader;
           reader.onload = function(e) {
-            imageEl.onload = function() {
-              var errors, height, width;
-              width = imageEl.naturalWidth;
-              height = imageEl.naturalHeight;
-              errors = [];
-              if (width < scope.width) {
-                errors.push("The image you dropped has a width of " + width + ", but the minimum is " + scope.width + ".");
-              }
-              if (scope.height && height < scope.height) {
-                errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.height + ".");
-              }
-              if (scope.ratio && scope.destinationHeight > height) {
-                errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.destinationHeight + ".");
-              }
-              return scope.$apply(function() {
-                if (errors.length) {
-                  return scope.dropError = errors.join("<br/>");
-                } else {
-                  $rootScope.$broadcast("cropme:loaded", width, height);
-                  scope.state = "step-2";
-                  return startCropping(width, height);
-                }
-              });
-            };
             return scope.$apply(function() {
-              return scope.imgSrc = e.target.result;
+              return loadImage(e.target.result);
             });
           };
           return reader.readAsDataURL(file);
+        };
+        loadImage = function(src) {
+          imageEl.onload = function() {
+            var errors, height, width;
+            width = imageEl.naturalWidth;
+            height = imageEl.naturalHeight;
+            errors = [];
+            if (width < scope.width) {
+              errors.push("The image you dropped has a width of " + width + ", but the minimum is " + scope.width + ".");
+            }
+            if (scope.height && height < scope.height) {
+              errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.height + ".");
+            }
+            if (scope.ratio && scope.destinationHeight > height) {
+              errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.destinationHeight + ".");
+            }
+            return scope.$apply(function() {
+              if (errors.length) {
+                return scope.dropError = errors.join("<br/>");
+              } else {
+                $rootScope.$broadcast("cropme:loaded", width, height);
+                return startCropping(width, height);
+              }
+            });
+          };
+          scope.state = "step-2";
+          return scope.imgSrc = src;
         };
         moveCropZone = function(coords) {
           scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2;
@@ -314,7 +314,10 @@
           });
         };
         scope.$on("cropme:cancel", scope.cancel);
-        return scope.$on("cropme:ok", scope.ok);
+        scope.$on("cropme:ok", scope.ok);
+        if (scope.src) {
+          return loadImage(scope.src);
+        }
       }
     };
   });
