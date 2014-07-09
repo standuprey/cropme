@@ -202,8 +202,7 @@ module.exports = function (grunt) {
     'coffee',
     'compass:dist',
     'concat',
-    'copy',
-    'test'
+    'copy'
   ]);
 
   grunt.registerTask('default', ['build']);
