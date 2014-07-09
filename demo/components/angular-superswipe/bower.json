@@ -17,14 +17,5 @@
   "authors": [
     "Stanislas Duprey <me@standupweb.net>"
   ],
-  "license": "MIT",
-  "_release": "0.0.2",
-  "_resolution": {
-    "type": "version",
-    "tag": "0.0.2",
-    "commit": "72ab3bc205f5e22691f91184a7a1ed56e780ef5c"
-  },
-  "_source": "git://github.com/standup75/superswipe.git",
-  "_target": "~0.0.2",
-  "_originalSource": "angular-superswipe"
+  "license": "MIT"
 }
