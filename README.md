@@ -14,7 +14,7 @@ Copy the cropme.js and cropme.css files into your project and add the following 
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
 
-		"angular-cropme": "~0.1.3"
+		"angular-cropme": "~0.1.7"
 
 Or simply run
 
@@ -26,13 +26,13 @@ Add the dependencies to your html:
 		<script src="components/angular-sanitize/angular-sanitize.js"></script>
 		<script src="components/angular-route/angular-route.js"></script>
 		<script src="components/angular-touch/angular-touch.js"></script>
-		<script src="components/angular-superswipe/angular-superswipe.js"></script>
+		<script src="components/angular-superswipe/superswipe.js"></script>
 
 
 And add this to your HTML:
 
 		<script src="components/angular-cropme/cropme.js"></script>
-		<link rel="stylesheet" href="components/cropme/cropme.css">
+		<link rel="stylesheet" href="components/angular-cropme/cropme.css">
 
 
 Usage

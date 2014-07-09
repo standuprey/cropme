@@ -1,1 +1,6 @@
-/* Will be compiled down to a single stylesheet with your sass files */
+html, body, .container {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
