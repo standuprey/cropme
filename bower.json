@@ -8,7 +8,7 @@
     "url": "git://github.com/standup75/cropme.git"
   },
   "main": "./cropme.js",
-  "version": "0.1.0",
+  "version": "0.1.8",
   "dependencies": {
     "angular": "~1.3.0",
     "angular-sanitize": "~1.3.0",
