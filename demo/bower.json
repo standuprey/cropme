@@ -1,20 +1,11 @@
 {
   "author": "Stanislas Duprey",
-  "name": "cropme",
-  "description": "Preview and crop a picture before upload",
-  "homepage": "http://github.com/standup75/cropme",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/standup75/cropme.git"
-  },
-  "main": [
-    "./cropme.js",
-    "./cropme.css"
-  ],
+  "name": "cropme-demo",
   "version": "0.2.0",
   "dependencies": {
     "angular": "^1.2.10",
     "angular-sanitize": "^1.2.10",
+    "angular-route": "^1.2.10",
     "angular-touch": "^1.2.10",
     "angular-superswipe": "^0.0.2"
   },
