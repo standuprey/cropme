@@ -25,8 +25,8 @@ module.exports = (grunt) ->
     "ngAnnotate"
     "ngdocs"
     "copy"
-    #"connect:test"
-    #"karma:unit"
+    "connect:test"
+    "karma:unit"
   ]
 
   grunt.registerTask "debug", [

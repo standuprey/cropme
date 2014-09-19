@@ -6,7 +6,7 @@
  # Main directive for the cropme module, see readme.md for the different options and example
  #
 ###
-angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootScope, elementOffset, canvasToBlob) ->
+angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootScope, $q, elementOffset, canvasToBlob) ->
 
 	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
 	borderSensitivity = 8 # grab area size around the borders in pixels
@@ -68,6 +68,8 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		ratio: "=?"
 		type: "=?"
 		src: "@?"
+		sendOriginal: "@?"
+		sendCropped: "@?"
 	link: (scope, element, attributes) ->
 		scope.dropText = "Drop picture here"
 		scope.state = "step-1"
@@ -80,6 +82,8 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		canvasEl = element.find("canvas")[0]
 		ctx = canvasEl.getContext "2d"
 
+		sendCropped = -> scope.sendCropped is `undefined` or scope.sendCropped is "true"
+		sendOriginal = -> scope.sendOriginal is "true"
 		startCropping = (imageWidth, imageHeight) ->
 			zoom = scope.width / imageWidth
 			heightWithImage = imageHeight * zoom
@@ -221,6 +225,28 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			if draggingFn
 				scope.$apply -> draggingFn(coords)
 
+		getCropPromise = ->
+			deferred = $q.defer()
+			if sendCropped()
+				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight
+				canvasToBlob canvasEl, ((blob) -> deferred.resolve(blob)), "image/#{scope.type}"
+			else
+				deferred.resolve()
+			deferred.promise
+
+		getOriginalPromise = ->
+			deferred = $q.defer()
+			if sendOriginal()
+				originalCanvas = document.createElement "canvas"
+				originalContext = originalCanvas.getContext "2d"
+				originalCanvas.width = imageEl.width
+				originalCanvas.height = imageEl.height
+				originalContext.drawImage imageEl, 0, 0
+				canvasToBlob originalCanvas, ((blob) -> deferred.resolve(blob)), "image/#{scope.type}"
+			else
+				deferred.resolve()
+			deferred.promise
+
 		scope.mousemove = (e) ->
 			scope.colResizePointer = isNearBorders({x: e.pageX, y:e.pageY})
 
@@ -247,12 +273,15 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			$event.preventDefault() if $event
 			scope.croppedWidth = scope.widthCropZone / zoom
 			scope.croppedHeight = scope.heightCropZone / zoom
-			$timeout ->
-				destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth
-				ctx.drawImage imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight
-				canvasToBlob canvasEl, (blob) ->
-					$rootScope.$broadcast "cropme:done", blob
-				, "image/#{scope.type}"
+			$q.all([getCropPromise(), getOriginalPromise()]).then (blobArray) ->
+				result =
+					x: scope.xCropZone / zoom
+					y: scope.yCropZone / zoom
+					height: scope.croppedHeight
+					width: scope.croppedWidth
+				result.croppedImage = blobArray[0]  if blobArray[0]
+				result.originalImage = blobArray[1]  if blobArray[1]
+				$rootScope.$broadcast "cropme:done", result, "image/#{scope.type}"
 
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok

@@ -15,10 +15,10 @@ module.exports = (config) ->
     files: [
       'bower_components/angular/angular.js'
       'bower_components/angular-mocks/angular-mocks.js'
-      'scripts/lib/config.js'
-      '.tmp/scripts/llServices.js'
-      '.tmp/scripts/**/*.js'
-      'test/mock/**/*.coffee'
+      'bower_components/angular-sanitize/angular-sanitize.js'
+      'bower_components/angular-touch/angular-touch.js'
+      'bower_components/angular-superswipe/superswipe.js'
+      'cropme.js'
       'test/spec/**/*.coffee'
     ]
 
@@ -41,7 +41,7 @@ module.exports = (config) ->
     # - PhantomJS
     # - IE (only Windows)
     browsers: [
-      'PhantomJS'
+      'Chrome'
     ]
 
     # Which plugins to enable

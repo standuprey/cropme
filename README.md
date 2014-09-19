@@ -54,6 +54,8 @@ Usage
 - destination-width: (optional) target (cropped) picture width
 - destination-height: (optional) target (cropped) picture height. Cannot be set if ratio is set.
 - src: (optional) url of the image to preload (skips file selection)
+- send-original: (default: false) If you want to send the original file
+- send-cropped: (default: true) If you want to send the cropped image
 
 And don't forget to add the module to your application
 
@@ -99,14 +101,6 @@ So, now, how do I send this image to my server?
 		});
 
 
-Demo
-----
+[Demo here!](http://standupweb.net/cropmedemo)
 
-Try the (very simple) demo. How to run the demo? Simple...
 
-		git clone git@github.com:standup75/cropme.git
-		cd cropme
-		npm install && bower install
-		grunt server
-
-This should open your browser at http://localhost:9000 where the demo now sits.

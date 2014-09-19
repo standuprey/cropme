@@ -23,7 +23,7 @@
  */
 
 (function() {
-  angular.module("cropme").directive("cropme", ["$swipe", "$window", "$timeout", "$rootScope", "elementOffset", "canvasToBlob", function($swipe, $window, $timeout, $rootScope, elementOffset, canvasToBlob) {
+  angular.module("cropme").directive("cropme", ["$swipe", "$window", "$timeout", "$rootScope", "$q", "elementOffset", "canvasToBlob", function($swipe, $window, $timeout, $rootScope, $q, elementOffset, canvasToBlob) {
     var borderSensitivity, minHeight;
     minHeight = 100;
     borderSensitivity = 8;
@@ -38,10 +38,12 @@
         iconClass: "=?",
         ratio: "=?",
         type: "=?",
-        src: "@?"
+        src: "@?",
+        sendOriginal: "@?",
+        sendCropped: "@?"
       },
       link: function(scope, element, attributes) {
-        var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, startCropping, zoom;
+        var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendOriginal, startCropping, zoom;
         scope.dropText = "Drop picture here";
         scope.state = "step-1";
         draggingFn = null;
@@ -52,6 +54,12 @@
         imageEl = element.find('img')[0];
         canvasEl = element.find("canvas")[0];
         ctx = canvasEl.getContext("2d");
+        sendCropped = function() {
+          return scope.sendCropped === undefined || scope.sendCropped === "true";
+        };
+        sendOriginal = function() {
+          return scope.sendOriginal === "true";
+        };
         startCropping = function(imageWidth, imageHeight) {
           zoom = scope.width / imageWidth;
           heightWithImage = imageHeight * zoom;
@@ -270,6 +278,36 @@
             });
           }
         };
+        getCropPromise = function() {
+          var deferred;
+          deferred = $q.defer();
+          if (sendCropped()) {
+            ctx.drawImage(imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight);
+            canvasToBlob(canvasEl, (function(blob) {
+              return deferred.resolve(blob);
+            }), "image/" + scope.type);
+          } else {
+            deferred.resolve();
+          }
+          return deferred.promise;
+        };
+        getOriginalPromise = function() {
+          var deferred, originalCanvas, originalContext;
+          deferred = $q.defer();
+          if (sendOriginal()) {
+            originalCanvas = document.createElement("canvas");
+            originalContext = originalCanvas.getContext("2d");
+            originalCanvas.width = imageEl.width;
+            originalCanvas.height = imageEl.height;
+            originalContext.drawImage(imageEl, 0, 0);
+            canvasToBlob(originalCanvas, (function(blob) {
+              return deferred.resolve(blob);
+            }), "image/" + scope.type);
+          } else {
+            deferred.resolve();
+          }
+          return deferred.promise;
+        };
         scope.mousemove = function(e) {
           return scope.colResizePointer = isNearBorders({
             x: e.pageX,
@@ -311,13 +349,21 @@
           }
           scope.croppedWidth = scope.widthCropZone / zoom;
           scope.croppedHeight = scope.heightCropZone / zoom;
-          return $timeout(function() {
-            var destinationHeight;
-            destinationHeight = scope.destinationHeight || scope.destinationWidth * scope.croppedHeight / scope.croppedWidth;
-            ctx.drawImage(imageEl, scope.xCropZone / zoom, scope.yCropZone / zoom, scope.croppedWidth, scope.croppedHeight, 0, 0, scope.destinationWidth, scope.destinationHeight);
-            return canvasToBlob(canvasEl, function(blob) {
-              return $rootScope.$broadcast("cropme:done", blob);
-            }, "image/" + scope.type);
+          return $q.all([getCropPromise(), getOriginalPromise()]).then(function(blobArray) {
+            var result;
+            result = {
+              x: scope.xCropZone / zoom,
+              y: scope.yCropZone / zoom,
+              height: scope.croppedHeight,
+              width: scope.croppedWidth
+            };
+            if (blobArray[0]) {
+              result.croppedImage = blobArray[0];
+            }
+            if (blobArray[1]) {
+              result.originalImage = blobArray[1];
+            }
+            return $rootScope.$broadcast("cropme:done", result, "image/" + scope.type);
           });
         };
         scope.$on("cropme:cancel", scope.cancel);
