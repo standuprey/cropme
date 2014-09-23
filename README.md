@@ -20,18 +20,19 @@ Or simply run
 
 		bower install angular-cropme
 
-Add the dependencies to your html:
+Check the dependencies to your html (unless you're using wiredep):
 
 		<script src="components/angular/angular.js"></script>
 		<script src="components/angular-sanitize/angular-sanitize.js"></script>
-		<script src="components/angular-route/angular-route.js"></script>
 		<script src="components/angular-touch/angular-touch.js"></script>
 		<script src="components/angular-superswipe/superswipe.js"></script>
 
-
-And add this to your HTML:
+And (unless you're using wiredep):
 
 		<script src="components/angular-cropme/cropme.js"></script>
+
+And the css:
+
 		<link rel="stylesheet" href="components/angular-cropme/cropme.css">
 
 
