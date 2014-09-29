@@ -297,8 +297,8 @@
           if (sendOriginal()) {
             originalCanvas = document.createElement("canvas");
             originalContext = originalCanvas.getContext("2d");
-            originalCanvas.width = imageEl.width;
-            originalCanvas.height = imageEl.height;
+            originalCanvas.width = imageEl.naturalWidth;
+            originalCanvas.height = imageEl.naturalHeight;
             originalContext.drawImage(imageEl, 0, 0);
             canvasToBlob(originalCanvas, (function(blob) {
               return deferred.resolve(blob);

@@ -1,6 +1,6 @@
 module.exports = test:
   options:
-    port: 9000
+    port: 9009
     middleware: (connect) ->
       [
         connect.static(".tmp")
