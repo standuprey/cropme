@@ -33,10 +33,9 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		<div
 			class="step-2"
 			ng-show="state == 'step-2'"
-			ng-style="{'width': width + 'px'}"
+			ng-style="{'width': width + 'px', cursor: colResizePointer}"
 			ng-mousemove="mousemove($event)"
-			ng-mouseleave="deselect()"
-			ng-class="{'col-resize': colResizePointer}">
+			ng-mouseleave="deselect()">
 			<img ng-src="{{imgSrc}}" ng-style="{'width': width + 'px'}" ng-show="imgLoaded"/>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}"></div>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}"></div>
@@ -248,7 +247,11 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			deferred.promise
 
 		scope.mousemove = (e) ->
-			scope.colResizePointer = isNearBorders({x: e.pageX, y:e.pageY})
+			scope.colResizePointer = switch isNearBorders({x: e.pageX, y:e.pageY})
+				when 'top' then 'ne-resize'
+				when 'right', 'bottom' then 'se-resize'
+				when 'left' then 'sw-resize'
+				else 'move'
 
 		$swipe.bind angular.element(element[0].getElementsByClassName('step-2')[0]),
 			'start': (coords) ->
