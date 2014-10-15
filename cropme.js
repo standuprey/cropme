@@ -82,7 +82,7 @@
             if (scope.ratio) {
               throw "You can't specify both destinationHeight and ratio, destinationHeight = destinationWidth * ratio";
             } else {
-              scope.ratio = destinationHeight / destinationWidth;
+              scope.ratio = scope.destinationHeight / scope.destinationWidth;
             }
           } else if (scope.ratio) {
             scope.destinationHeight = scope.destinationWidth * scope.ratio;
