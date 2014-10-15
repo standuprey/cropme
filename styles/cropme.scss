@@ -113,9 +113,8 @@ cropme {
 	}
 	.step-2 {
 		position: relative;
-		cursor: crosshair;
+		cursor: move;
 		overflow: hidden;
-		&.col-resize { cursor: col-resize; }
 	}
 	img { float: left; }
 	canvas { display: none; }
