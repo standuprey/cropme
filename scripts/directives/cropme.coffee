@@ -58,6 +58,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		</canvas>
 	"""
 	restrict: "E"
+  priority: 99 # it needs to run after the attributes are interpolated
 	scope: 
 		width: "=?"
 		destinationWidth: "="
