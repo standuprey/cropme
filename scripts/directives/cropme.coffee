@@ -131,6 +131,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				scope.$apply -> loadImage e.target.result
 			reader.readAsDataURL(file);
 		loadImage = (src) ->
+			return unless src
 			imageEl.onload = ->
 				width = imageEl.naturalWidth
 				height = imageEl.naturalHeight
@@ -289,4 +290,6 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok
-		loadImage(scope.src) if scope.src
+		scope.$watch "src",  -> loadImage scope.src
+		
+		loadImage scope.src

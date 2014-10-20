@@ -131,6 +131,9 @@
           return reader.readAsDataURL(file);
         };
         loadImage = function(src) {
+          if (!src) {
+            return;
+          }
           imageEl.onload = function() {
             var errors, height, width;
             width = imageEl.naturalWidth;
@@ -381,9 +384,10 @@
         };
         scope.$on("cropme:cancel", scope.cancel);
         scope.$on("cropme:ok", scope.ok);
-        if (scope.src) {
+        scope.$watch("src", function() {
           return loadImage(scope.src);
-        }
+        });
+        return loadImage(scope.src);
       }
     };
   }]);
