@@ -134,6 +134,12 @@
           if (!src) {
             return;
           }
+          imageEl.onerror = function() {
+            return scope.$apply(function() {
+              scope.cancel();
+              return scope.dropError = "Unsupported type of image";
+            });
+          };
           imageEl.onload = function() {
             var errors, height, width;
             width = imageEl.naturalWidth;
@@ -142,15 +148,13 @@
             if (width < scope.width) {
               errors.push("The image you dropped has a width of " + width + ", but the minimum is " + scope.width + ".");
             }
-            if (scope.height && height < scope.height) {
-              errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.height + ".");
-            }
-            if (scope.ratio && scope.destinationHeight > height) {
-              errors.push("The image you dropped has a height of " + height + ", but the minimum is " + scope.destinationHeight + ".");
+            minHeight = Math.min(scope.height, scope.destinationHeight);
+            if (height < minHeight) {
+              errors.push("The image you dropped has a height of " + height + ", but the minimum is " + minHeight + ".");
             }
             return scope.$apply(function() {
               if (errors.length) {
-                scope.state = "step-1";
+                scope.cancel();
                 return scope.dropError = errors.join("<br/>");
               } else {
                 scope.imgLoaded = true;
