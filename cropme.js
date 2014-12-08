@@ -164,8 +164,10 @@
             });
           };
           scope.state = "step-2";
-          scope.imgSrc = src;
-          return scope.imgLoaded = false;
+          if (src !== scope.imgSrc) {
+            scope.imgSrc = src;
+            return scope.imgLoaded = false;
+          }
         };
         moveCropZone = function(coords) {
           scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2;
@@ -247,6 +249,9 @@
         };
         isNearBorders = function(coords) {
           var bottomLeft, bottomRight, h, topLeft, topRight, w, x, y;
+          if (!elOffset) {
+            return false;
+          }
           x = scope.xCropZone + elOffset.left;
           y = scope.yCropZone + elOffset.top;
           w = scope.widthCropZone;

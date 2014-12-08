@@ -4,6 +4,5 @@ module.exports = dist:
     src: [
       "*.js"
       ".tmp"
-      "docs"
     ]
   ]

@@ -154,8 +154,9 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 						$rootScope.$broadcast "cropme:loaded", width, height
 						startCropping width, height
 			scope.state = "step-2"
-			scope.imgSrc = src
-			scope.imgLoaded = false
+			if src isnt scope.imgSrc
+				scope.imgSrc = src
+				scope.imgLoaded = false
 							
 		moveCropZone = (coords) ->
 			scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2
@@ -210,6 +211,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 					checkVRatio()
 
 		isNearBorders = (coords) ->
+			return false  unless elOffset
 			x = scope.xCropZone + elOffset.left
 			y = scope.yCropZone + elOffset.top
 			w = scope.widthCropZone

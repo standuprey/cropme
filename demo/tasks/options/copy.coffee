@@ -11,6 +11,7 @@ module.exports =
 					"*.html"
 					"views/{,*/}*.html"
 					"styles/*.css"
+					"images/*.*"
 				]
 			}
 		]
