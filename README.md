@@ -34,6 +34,14 @@ And (unless you're using wiredep):
 And the css:
 
 		<link rel="stylesheet" href="components/angular-cropme/cropme.css">
+		
+Add the module to your application
+
+		angular.module("myApp", ["cropme"])
+
+You can choose to hide the default ok and cancel buttons by adding this to your css
+
+		#cropme-cancel, #cropme-ok { display: none; }
 
 
 Usage
@@ -47,33 +55,50 @@ Usage
 			destination-width="300">
 		</cropme>
 
-- width: (optional) width of the container. The image you want to crop will be reduced to this width. Omit the width to make the box fit the size of the parent container
-- height: (optional) height of the container. Default is 300
-- icon-class: (optional) css class of the icon to be set in the middle of the drop box
-- type: (optional) png or jpeg (might work with webm too, haven't tried it)
-- ratio: (optional) destination-height = ratio x destination-width. So you can either define ratio, or add a destination-height parameter, or none.
-- destination-width: (optional) target (cropped) picture width
-- destination-height: (optional) target (cropped) picture height. Cannot be set if ratio is set.
-- src: (optional) url of the image to preload (skips file selection)
-- send-original: (default: false) If you want to send the original file
-- send-cropped: (default: true) If you want to send the cropped image
+Attributes
+----------
 
-And don't forget to add the module to your application
+#### width (optional)
+Set the width of the crop space container. Omit the width to make the box fit the size of the parent container. The image you want to crop will be reduced to this width and the directive will throw an error if the image to be cropped is smaller than this width.
+#### height (optional, default: 300px) 
+Set the height of the container. The image to be cropped cannot be less than this measurement.
+#### icon-class: (optional) 
+CSS class of the icon to be set in the middle of the drop box
+#### type (optional)
+Valid values are 'png' or 'jpeg' (might work with webm too, haven't tried it)
+#### destination-width (optional) 
+Set the target (cropped) picture width.
+		destination-width="250"
+the cropped image will have a width of 250px.
+#### destination-height (optional) 
+Set the target (cropped) picture height. Cannot be set if ratio is set.
+		destination-height="250"
+the cropped image will have a height of 250px.
+#### ratio (optional, requires destination-width to be set) 
+Constrict the crop area to a fixed ratio. Here are some common examples: 1 = 1:1 ratio, 0.75 = 4:3 ratio and 0.5 = 2:1 ratio.
+```
+ratio = destination-height / destination-width
+destination-height = ratio x destination-width
+```
+WARNING: When setting a ratio attribute you must not also set a destination-height attribute or an error will be thrown.
 
-		angular.module("myApp", ["cropme"])
+To control the size of the cropped image you can use a combination of destination-width and ratio or destination-width and destination-height.
 
-You can choose to hide the default ok and cancel buttons by adding this to your css
-
-		#cropme-cancel, #cropme-ok { display: none; }
+#### src (optional) 
+url of the image to preload (skips file selection)
+#### send-original (default: false) 
+If you want to send the original file
+#### send-cropped (default: true) 
+If you want to send the cropped image
 
 Events Sent
 ----------
 
-The blob will be sent through an event, to catch it inside your app, you can do like this:
+The blob will be sent through an event, to catch it inside your app, you can do it like this:
 
 		$scope.$on("cropme:done", function(e, result, canvasEl) { /* do something */ });
 
-Where result is
+Where result is an object with the following keys:
 
 		x: x position of the crop image relative to the original image
 		y: y position of the crop image relative to the original image
