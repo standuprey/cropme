@@ -59,7 +59,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 	"""
 	restrict: "E"
 	priority: 99 # it needs to run after the attributes are interpolated
-	scope: 
+	scope:
 		width: "=?"
 		destinationWidth: "="
 		height: "=?"
@@ -70,6 +70,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		src: "@?"
 		sendOriginal: "@?"
 		sendCropped: "@?"
+		id: "@?"
 	link: (scope, element, attributes) ->
 		scope.dropText = "Drop picture here"
 		scope.state = "step-1"
@@ -127,7 +128,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				return scope.dropError = "Wrong file type, please select an image."
 			scope.dropError = ""
 			reader = new FileReader
-			reader.onload = (e) -> 
+			reader.onload = (e) ->
 				scope.$apply -> loadImage e.target.result
 			reader.readAsDataURL(file);
 		loadImage = (src) ->
@@ -157,12 +158,12 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			if src isnt scope.imgSrc
 				scope.imgSrc = src
 				scope.imgLoaded = false
-							
+
 		moveCropZone = (coords) ->
 			scope.xCropZone = coords.x - elOffset.left - scope.widthCropZone / 2
 			scope.yCropZone = coords.y - elOffset.top - scope.heightCropZone / 2
 			checkBounds()
-		moveBorders = 
+		moveBorders =
 			top: (coords) ->
 				y = coords.y - elOffset.top
 				scope.heightCropZone += scope.yCropZone - y
@@ -291,10 +292,10 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 					width: scope.croppedWidth
 				result.croppedImage = blobArray[0]  if blobArray[0]
 				result.originalImage = blobArray[1]  if blobArray[1]
-				$rootScope.$broadcast "cropme:done", result, "image/#{scope.type}"
+				$rootScope.$broadcast "cropme:done", result, "image/#{scope.type}", scope.id
 
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok
 		scope.$watch "src",  -> loadImage scope.src
-		
+
 		loadImage scope.src
