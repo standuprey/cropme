@@ -41,7 +41,8 @@
         type: "=?",
         src: "@?",
         sendOriginal: "@?",
-        sendCropped: "@?"
+        sendCropped: "@?",
+        id: "@?"
       },
       link: function(scope, element, attributes) {
         var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendOriginal, startCropping, zoom;
@@ -388,7 +389,7 @@
             if (blobArray[1]) {
               result.originalImage = blobArray[1];
             }
-            return $rootScope.$broadcast("cropme:done", result, "image/" + scope.type);
+            return $rootScope.$broadcast("cropme:done", result, "image/" + scope.type, scope.id);
           });
         };
         scope.$on("cropme:cancel", scope.cancel);
@@ -486,7 +487,7 @@
     * Transform a html canvas into a blob that can then be uploaded as a file
     *
     * @example
-  
+
   ```js
   angular.module("cropme").controller "myController", (canvasToBlob) ->
   	 * upload the french flag
@@ -603,7 +604,7 @@
     * Get the offset in pixel of an element on the screen
     *
     * @example
-  
+
   ```js
   angular.module("cropme").directive "myDirective", (elementOffset) ->
   	link: (scope, element, attributes) ->
