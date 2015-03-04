@@ -122,6 +122,7 @@
           if (!file.type.match(/^image\//)) {
             return scope.dropError = "Wrong file type, please select an image.";
           }
+          scope.filename = file.name;
           scope.dropError = "";
           reader = new FileReader;
           reader.onload = function(e) {
@@ -368,7 +369,8 @@
           scope.dropText = "Drop files here";
           scope.dropClass = "";
           scope.state = "step-1";
-          return scope.imgSrc = null;
+          delete scope.imgSrc;
+          return delete scope.filename;
         };
         scope.ok = function($event) {
           if ($event) {
@@ -382,7 +384,8 @@
               x: scope.xCropZone / zoom,
               y: scope.yCropZone / zoom,
               height: scope.croppedHeight,
-              width: scope.croppedWidth
+              width: scope.croppedWidth,
+              filename: scope.filename
             };
             if (blobArray[0]) {
               result.croppedImage = blobArray[0];

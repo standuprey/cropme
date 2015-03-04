@@ -11,7 +11,7 @@
     "./cropme.js",
     "./cropme.css"
   ],
-  "version": "0.2.8",
+  "version": "0.2.11",
   "dependencies": {
     "angular": "^1.2.10",
     "angular-sanitize": "^1.2.10",

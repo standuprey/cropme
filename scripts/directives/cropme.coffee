@@ -126,6 +126,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		scope.setFiles = (file) ->
 			unless file.type.match /^image\//
 				return scope.dropError = "Wrong file type, please select an image."
+			scope.filename = file.name
 			scope.dropError = ""
 			reader = new FileReader
 			reader.onload = (e) ->
@@ -280,7 +281,9 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.dropText = "Drop files here"
 			scope.dropClass = ""
 			scope.state = "step-1"
-			scope.imgSrc = null
+			delete scope.imgSrc
+			delete scope.filename
+
 		scope.ok = ($event) ->
 			$event.preventDefault() if $event
 			scope.croppedWidth = scope.widthCropZone / zoom
@@ -291,6 +294,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 					y: scope.yCropZone / zoom
 					height: scope.croppedHeight
 					width: scope.croppedWidth
+					filename: scope.filename
 				result.croppedImage = blobArray[0]  if blobArray[0]
 				result.originalImage = blobArray[1]  if blobArray[1]
 				$rootScope.$broadcast "cropme:done", result, "image/#{scope.type}", scope.id

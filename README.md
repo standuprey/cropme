@@ -109,6 +109,7 @@ Where result is an object with the following keys:
 		width: width of the crop image
 		croppedImage: crop image as a blob
 		originalImage: original image as a blob
+		filename: name of the original file
 
 Also cropme will send an event when a picture has been chosen by the user, so you can do something like
 
