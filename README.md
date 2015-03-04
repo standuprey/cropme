@@ -34,7 +34,7 @@ And (unless you're using wiredep):
 And the css:
 
 		<link rel="stylesheet" href="components/angular-cropme/cropme.css">
-		
+
 Add the module to your application
 
 		angular.module("myApp", ["cropme"])
@@ -52,7 +52,8 @@ Usage
 			ratio="1"
 			icon-class=""
 			type="png"
-			destination-width="300">
+			destination-width="300"
+			id="cropme1">
 		</cropme>
 
 Attributes
@@ -60,21 +61,21 @@ Attributes
 
 #### width (optional)
 Set the width of the crop space container. Omit the width to make the box fit the size of the parent container. The image you want to crop will be reduced to this width and the directive will throw an error if the image to be cropped is smaller than this width.
-#### height (optional, default: 300px) 
+#### height (optional, default: 300px)
 Set the height of the container. The image to be cropped cannot be less than this measurement.
-#### icon-class: (optional) 
+#### icon-class: (optional)
 CSS class of the icon to be set in the middle of the drop box
 #### type (optional)
 Valid values are 'png' or 'jpeg' (might work with webm too, haven't tried it)
-#### destination-width (optional) 
+#### destination-width (optional)
 Set the target (cropped) picture width.
 		destination-width="250"
 the cropped image will have a width of 250px.
-#### destination-height (optional) 
+#### destination-height (optional)
 Set the target (cropped) picture height. Cannot be set if ratio is set.
 		destination-height="250"
 the cropped image will have a height of 250px.
-#### ratio (optional, requires destination-width to be set) 
+#### ratio (optional, requires destination-width to be set)
 Constrict the crop area to a fixed ratio. Here are some common examples: 1 = 1:1 ratio, 0.75 = 4:3 ratio and 0.5 = 2:1 ratio.
 ```
 ratio = destination-height / destination-width
@@ -84,12 +85,14 @@ WARNING: When setting a ratio attribute you must not also set a destination-heig
 
 To control the size of the cropped image you can use a combination of destination-width and ratio or destination-width and destination-height.
 
-#### src (optional) 
+#### src (optional)
 url of the image to preload (skips file selection)
-#### send-original (default: false) 
+#### send-original (default: false)
 If you want to send the original file
-#### send-cropped (default: true) 
+#### send-cropped (default: true)
 If you want to send the cropped image
+#### id (optional)
+Add id to cropme to tell which cropme element sent the done/ loaded event
 
 Events Sent
 ----------
@@ -137,5 +140,3 @@ So, now, how do I send this image to my server?
 
 
 [Demo here!](http://standupweb.net/cropmedemo)
-
-
