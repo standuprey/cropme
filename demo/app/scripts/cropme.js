@@ -41,7 +41,8 @@
         type: "=?",
         src: "@?",
         sendOriginal: "@?",
-        sendCropped: "@?"
+        sendCropped: "@?",
+        id: "@?"
       },
       link: function(scope, element, attributes) {
         var $input, canvasEl, checkBounds, checkHRatio, checkScopeVariables, checkVRatio, ctx, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendOriginal, startCropping, zoom;
@@ -366,7 +367,8 @@
           }
           scope.dropText = "Drop files here";
           scope.dropClass = "";
-          return scope.state = "step-1";
+          scope.state = "step-1";
+          return scope.imgSrc = null;
         };
         scope.ok = function($event) {
           if ($event) {
@@ -388,7 +390,7 @@
             if (blobArray[1]) {
               result.originalImage = blobArray[1];
             }
-            return $rootScope.$broadcast("cropme:done", result, "image/" + scope.type);
+            return $rootScope.$broadcast("cropme:done", result, "image/" + scope.type, scope.id);
           });
         };
         scope.$on("cropme:cancel", scope.cancel);

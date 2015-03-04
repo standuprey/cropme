@@ -6,7 +6,7 @@ describe 'Service: canvasToBlob', ->
 
 	it 'should create a blob with the french flag in it', inject (canvasToBlob) ->
 		# upload the french flag
-		uploader = (blob) -> expect(blob.size).toBe 1146
+		uploader = (blob) -> expect(blob.size).toBe 1107
 		canvas = document.createElement "canvas"
 		canvas.height = 100
 		canvas.width = 300

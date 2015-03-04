@@ -367,7 +367,8 @@
           }
           scope.dropText = "Drop files here";
           scope.dropClass = "";
-          return scope.state = "step-1";
+          scope.state = "step-1";
+          return scope.imgSrc = null;
         };
         scope.ok = function($event) {
           if ($event) {
@@ -487,7 +488,7 @@
     * Transform a html canvas into a blob that can then be uploaded as a file
     *
     * @example
-
+  
   ```js
   angular.module("cropme").controller "myController", (canvasToBlob) ->
   	 * upload the french flag
@@ -604,7 +605,7 @@
     * Get the offset in pixel of an element on the screen
     *
     * @example
-
+  
   ```js
   angular.module("cropme").directive "myDirective", (elementOffset) ->
   	link: (scope, element, attributes) ->

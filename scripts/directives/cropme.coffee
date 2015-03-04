@@ -280,6 +280,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.dropText = "Drop files here"
 			scope.dropClass = ""
 			scope.state = "step-1"
+			scope.imgSrc = null
 		scope.ok = ($event) ->
 			$event.preventDefault() if $event
 			scope.croppedWidth = scope.widthCropZone / zoom

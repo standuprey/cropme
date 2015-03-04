@@ -99,7 +99,7 @@ Events Sent
 
 The blob will be sent through an event, to catch it inside your app, you can do it like this:
 
-		$scope.$on("cropme:done", function(e, result, canvasEl) { /* do something */ });
+		$scope.$on("cropme:done", function(ev, result, canvasEl) { /* do something */ });
 
 Where result is an object with the following keys:
 
@@ -112,7 +112,7 @@ Where result is an object with the following keys:
 
 Also cropme will send an event when a picture has been chosen by the user, so you can do something like
 
-		$scope.$on("cropme:loaded", function(width, height) { /* do something when the image is loaded */ });
+		$scope.$on("cropme:loaded", function(ev, width, height) { /* do something when the image is loaded */ });
 
 Events Received
 ---------------
@@ -124,7 +124,7 @@ And you can trigger ok and cancel action by broadcasting the events cropme:cance
 So, now, how do I send this image to my server?
 -----------------------------------------------
 
-		scope.$on("cropme:done", function(e, blob) {
+		scope.$on("cropme:done", function(ev, blob) {
 			var xhr = new XMLHttpRequest;
 			xhr.setRequestHeader("Content-Type", blob.type);
 			xhr.onreadystatechange = function(e) {
