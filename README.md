@@ -53,7 +53,9 @@ Usage
 			icon-class=""
 			type="png"
 			destination-width="300"
-			id="cropme1">
+			id="cropme1"
+			okLabel="Ok"
+			cancelLabel="Cancel">
 		</cropme>
 
 Attributes
