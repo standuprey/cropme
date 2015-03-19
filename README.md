@@ -91,7 +91,9 @@ WARNING: When setting a ratio attribute you must not also set a destination-heig
 To control the size of the cropped image you can use a combination of destination-width and ratio or destination-width and destination-height.
 
 #### src (optional)
-url of the image to preload (skips file selection)
+url of the image to preload (skips file selection). Note that if the url is not local, you might get the following error:
+`Error: [$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy`
+In this case make sure that wrap the source string with `$sce.trustAsResourceUrl` in your controller. You can see the controller of the demo for an example
 #### send-original (default: false)
 If you want to send the original file
 #### send-cropped (default: true)
