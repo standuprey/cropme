@@ -55,11 +55,14 @@ Usage
 			destination-width="300"
 			id="cropme1"
 			okLabel="Ok"
+			src="images/myImage.jpg"
 			cancelLabel="Cancel">
 		</cropme>
 
 Attributes
 ----------
+
+Note: all local scope properties are defined using "@", meaning it accesses the string value, if you want a variable to be accessed, you need to use interpolation, for example, if the src of the image is in the controller variable imgSrc, you can use the src attributes like this: `src="{{imgSrc}}"`
 
 #### width (optional)
 Set the width of the crop space container. Omit the width to make the box fit the size of the parent container. The image you want to crop will be reduced to this width and the directive will throw an error if the image to be cropped is smaller than this width.
