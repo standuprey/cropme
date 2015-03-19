@@ -93,6 +93,10 @@ If you want to send the original file
 If you want to send the cropped image
 #### id (optional)
 Add id to cropme to tell which cropme element sent the done/ loaded event
+#### okLabel
+Label for the ok button (default: "Ok")
+#### cancelLabel
+Label for the cancel button (default: "Cancel")
 
 Events Sent
 ----------
