@@ -54,9 +54,9 @@ Usage
 			type="png"
 			destination-width="300"
 			id="cropme1"
-			okLabel="Ok"
+			ok-label="Ok"
 			src="images/myImage.jpg"
-			cancelLabel="Cancel">
+			cancel-label="Cancel">
 		</cropme>
 
 Attributes
@@ -100,9 +100,9 @@ If you want to send the original file
 If you want to send the cropped image
 #### id (optional)
 Add id to cropme to tell which cropme element sent the done/ loaded event
-#### okLabel
+#### ok-label
 Label for the ok button (default: "Ok")
-#### cancelLabel
+#### cancel-label
 Label for the cancel button (default: "Cancel")
 
 Events Sent
