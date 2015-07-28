@@ -95,9 +95,6 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.yCropZone = Math.round (scope.height - scope.heightCropZone) / 2
 
 		scope.checkScopeVariables = ->
-			unless scope.width
-				scope.width = element[0].offsetWidth
-				scope.height = element[0].offsetHeight  unless scope.ratio || scope.height
 			if scope.destinationHeight and not scope.ratio
 				scope.ratio = scope.destinationHeight / scope.destinationWidth
 			else if scope.ratio
@@ -126,9 +123,9 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.dropError = ""
 			reader = new FileReader
 			reader.onload = (e) ->
-				scope.$apply -> loadImage e.target.result
+				scope.$apply -> loadImage e.target.result, true
 			reader.readAsDataURL(file);
-		loadImage = (src) ->
+		loadImage = (src, base64Src = false) ->
 			return unless src
 			scope.state = "step-2"
 			if src isnt scope.imgSrc
@@ -156,7 +153,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 							scope.imgLoaded = true
 							$rootScope.$broadcast "cropme:loaded", width, height
 							startCropping width, height
-				img.crossOrigin = "anonymous"
+				img.crossOrigin = "anonymous"  unless base64Src
 				img.src = src
 
 		moveCropZone = (coords) ->
