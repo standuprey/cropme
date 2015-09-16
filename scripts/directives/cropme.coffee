@@ -253,7 +253,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			deferred.promise
 
 		scope.mousemove = (e) ->
-			scope.colResizePointer = switch isNearBorders({x: e.pageX, y:e.pageY})
+			scope.colResizePointer = switch isNearBorders({x: e.pageX, y:(e.pageY - window.scrollY)})
 				when 'top' then 'ne-resize'
 				when 'right', 'bottom' then 'se-resize'
 				when 'left' then 'sw-resize'
