@@ -47,7 +47,7 @@
         cancelLabel: "@?"
       },
       link: function(scope, element, attributes) {
-        var $input, canvasEl, checkBounds, checkHRatio, checkVRatio, ctx, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendOriginal, startCropping, zoom;
+        var $input, canvasEl, checkBoundsAndSendProgressEvent, checkHRatio, checkVRatio, ctx, debounce, debouncedSendImageEvent, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendImageEvent, sendOriginal, startCropping, zoom;
         scope.dropText = "Drop picture here";
         scope.state = "step-1";
         draggingFn = null;
@@ -157,6 +157,7 @@
                 } else {
                   scope.imgLoaded = true;
                   $rootScope.$broadcast("cropme:loaded", width, height);
+                  sendImageEvent("progress");
                   return startCropping(width, height);
                 }
               });
@@ -172,7 +173,7 @@
           offset = elOffset();
           scope.xCropZone = coords.x - offset.left - scope.widthCropZone / 2;
           scope.yCropZone = coords.y - offset.top - scope.heightCropZone / 2;
-          return checkBounds();
+          return checkBoundsAndSendProgressEvent();
         };
         moveBorders = {
           top: function(coords) {
@@ -181,21 +182,21 @@
             scope.heightCropZone += scope.yCropZone - y;
             scope.yCropZone = y;
             checkVRatio();
-            return checkBounds();
+            return checkBoundsAndSendProgressEvent();
           },
           right: function(coords) {
             var x;
             x = coords.x - elOffset().left;
             scope.widthCropZone = x - scope.xCropZone;
             checkHRatio();
-            return checkBounds();
+            return checkBoundsAndSendProgressEvent();
           },
           bottom: function(coords) {
             var y;
             y = coords.y - elOffset().top;
             scope.heightCropZone = y - scope.yCropZone;
             checkVRatio();
-            return checkBounds();
+            return checkBoundsAndSendProgressEvent();
           },
           left: function(coords) {
             var x;
@@ -203,7 +204,7 @@
             scope.widthCropZone += scope.xCropZone - x;
             scope.xCropZone = x;
             checkHRatio();
-            return checkBounds();
+            return checkBoundsAndSendProgressEvent();
           }
         };
         checkHRatio = function() {
@@ -216,7 +217,7 @@
             return scope.widthCropZone = scope.heightCropZone / scope.ratio;
           }
         };
-        checkBounds = function() {
+        checkBoundsAndSendProgressEvent = function() {
           if (scope.xCropZone < 0) {
             scope.xCropZone = 0;
           }
@@ -243,9 +244,10 @@
             if (scope.yCropZone < 0) {
               scope.heightCropZone = heightWithImage;
               scope.yCropZone = 0;
-              return checkVRatio();
+              checkVRatio();
             }
           }
+          return debouncedSendImageEvent("progress");
         };
         isNearBorders = function(coords) {
           var bottomLeft, bottomRight, h, offset, topLeft, topRight, w, x, y;
@@ -319,11 +321,56 @@
           }
           return deferred.promise;
         };
+        sendImageEvent = function(eventName) {
+          console.log(eventName);
+          scope.croppedWidth = scope.widthCropZone / zoom;
+          scope.croppedHeight = scope.heightCropZone / zoom;
+          return $q.all([getCropPromise(), getOriginalPromise()]).then(function(blobArray) {
+            var result;
+            result = {
+              x: scope.xCropZone / zoom,
+              y: scope.yCropZone / zoom,
+              height: scope.croppedHeight,
+              width: scope.croppedWidth,
+              destinationHeight: scope.destinationHeight,
+              destinationWidth: scope.destinationWidth,
+              filename: scope.filename
+            };
+            if (blobArray[0]) {
+              result.croppedImage = blobArray[0];
+            }
+            if (blobArray[1]) {
+              result.originalImage = blobArray[1];
+            }
+            return $rootScope.$broadcast("cropme:" + eventName, result, "image/" + scope.type, scope.id);
+          });
+        };
+        debounce = function(func, wait, immediate) {
+          var timeout;
+          timeout = void 0;
+          return function() {
+            var args, callNow, context, later;
+            context = this;
+            args = arguments;
+            later = function() {
+              timeout = null;
+              if (!immediate) {
+                func.apply(context, args);
+              }
+            };
+            callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) {
+              func.apply(context, args);
+            }
+          };
+        };
         scope.mousemove = function(e) {
           return scope.colResizePointer = (function() {
             switch (isNearBorders({
-                  x: e.pageX,
-                  y: e.pageY
+                  x: e.pageX - window.scrollX,
+                  y: e.pageY - window.scrollY
                 })) {
               case 'top':
                 return 'ne-resize';
@@ -372,38 +419,22 @@
           if ($event) {
             $event.preventDefault();
           }
-          scope.croppedWidth = scope.widthCropZone / zoom;
-          scope.croppedHeight = scope.heightCropZone / zoom;
-          return $q.all([getCropPromise(), getOriginalPromise()]).then(function(blobArray) {
-            var result;
-            result = {
-              x: scope.xCropZone / zoom,
-              y: scope.yCropZone / zoom,
-              height: scope.croppedHeight,
-              width: scope.croppedWidth,
-              destinationHeight: scope.destinationHeight,
-              destinationWidth: scope.destinationWidth,
-              filename: scope.filename
-            };
-            if (blobArray[0]) {
-              result.croppedImage = blobArray[0];
-            }
-            if (blobArray[1]) {
-              result.originalImage = blobArray[1];
-            }
-            return $rootScope.$broadcast("cropme:done", result, "image/" + scope.type, scope.id);
-          });
+          return sendImageEvent("done");
         };
         scope.$on("cropme:cancel", scope.cancel);
         scope.$on("cropme:ok", scope.ok);
-        return scope.$watch("src", function() {
+        scope.$watch("src", function() {
           var delimit;
           if (scope.src) {
             scope.filename = scope.src;
+            if (scope.src.indexOf("data:image") === 0) {
+              loadImage(scope.src, true);
+            }
             delimit = scope.src.match(/\?/) ? "&" : "?";
             return loadImage("" + scope.src + delimit + "crossOrigin");
           }
         });
+        return debouncedSendImageEvent = debounce(sendImageEvent, 300);
       }
     };
   }]);

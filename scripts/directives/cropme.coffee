@@ -152,6 +152,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 						else
 							scope.imgLoaded = true
 							$rootScope.$broadcast "cropme:loaded", width, height
+							sendImageEvent "progress"
 							startCropping width, height
 				img.crossOrigin = "anonymous"  unless base64Src
 				img.src = src
@@ -160,34 +161,34 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			offset = elOffset()
 			scope.xCropZone = coords.x - offset.left - scope.widthCropZone / 2
 			scope.yCropZone = coords.y - offset.top - scope.heightCropZone / 2
-			checkBounds()
+			checkBoundsAndSendProgressEvent()
 		moveBorders =
 			top: (coords) ->
 				y = coords.y - elOffset().top
 				scope.heightCropZone += scope.yCropZone - y
 				scope.yCropZone = y
 				checkVRatio()
-				checkBounds()
+				checkBoundsAndSendProgressEvent()
 			right: (coords) ->
 				x = coords.x - elOffset().left
 				scope.widthCropZone = x - scope.xCropZone
 				checkHRatio()
-				checkBounds()
+				checkBoundsAndSendProgressEvent()
 			bottom: (coords) ->
 				y = coords.y - elOffset().top
 				scope.heightCropZone = y - scope.yCropZone
 				checkVRatio()
-				checkBounds()
+				checkBoundsAndSendProgressEvent()
 			left: (coords) ->
 				x = coords.x - elOffset().left
 				scope.widthCropZone += scope.xCropZone - x
 				scope.xCropZone = x
 				checkHRatio()
-				checkBounds()
+				checkBoundsAndSendProgressEvent()
 
 		checkHRatio = -> scope.heightCropZone = scope.widthCropZone * scope.ratio if scope.ratio
 		checkVRatio = -> scope.widthCropZone = scope.heightCropZone / scope.ratio if scope.ratio
-		checkBounds = ->
+		checkBoundsAndSendProgressEvent = ->
 			scope.xCropZone = 0 if scope.xCropZone < 0
 			scope.yCropZone = 0 if scope.yCropZone < 0
 			if scope.widthCropZone < scope.destinationWidth * zoom
@@ -208,6 +209,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 					scope.heightCropZone = heightWithImage
 					scope.yCropZone = 0
 					checkVRatio()
+			debouncedSendImageEvent "progress"
 
 		isNearBorders = (coords) ->
 			offset = elOffset()
@@ -252,8 +254,43 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				deferred.resolve()
 			deferred.promise
 
+		sendImageEvent = (eventName) ->
+			console.log eventName
+			scope.croppedWidth = scope.widthCropZone / zoom
+			scope.croppedHeight = scope.heightCropZone / zoom
+			$q.all([getCropPromise(), getOriginalPromise()]).then (blobArray) ->
+				result =
+					x: scope.xCropZone / zoom
+					y: scope.yCropZone / zoom
+					height: scope.croppedHeight
+					width: scope.croppedWidth
+					destinationHeight: scope.destinationHeight
+					destinationWidth: scope.destinationWidth
+					filename: scope.filename
+				result.croppedImage = blobArray[0]  if blobArray[0]
+				result.originalImage = blobArray[1]  if blobArray[1]
+				$rootScope.$broadcast "cropme:#{eventName}", result, "image/#{scope.type}", scope.id
+		debounce = (func, wait, immediate) ->
+			timeout = undefined
+			->
+				context = this
+				args = arguments
+
+				later = ->
+					timeout = null
+					if !immediate
+						func.apply context, args
+					return
+
+				callNow = immediate and !timeout
+				clearTimeout timeout
+				timeout = setTimeout(later, wait)
+				if callNow
+					func.apply context, args
+				return
+
 		scope.mousemove = (e) ->
-			scope.colResizePointer = switch isNearBorders({x: e.pageX, y:(e.pageY - window.scrollY)})
+			scope.colResizePointer = switch isNearBorders({x: e.pageX - window.scrollX, y:(e.pageY - window.scrollY)})
 				when 'top' then 'ne-resize'
 				when 'right', 'bottom' then 'se-resize'
 				when 'left' then 'sw-resize'
@@ -283,25 +320,14 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 
 		scope.ok = ($event) ->
 			$event.preventDefault() if $event
-			scope.croppedWidth = scope.widthCropZone / zoom
-			scope.croppedHeight = scope.heightCropZone / zoom
-			$q.all([getCropPromise(), getOriginalPromise()]).then (blobArray) ->
-				result =
-					x: scope.xCropZone / zoom
-					y: scope.yCropZone / zoom
-					height: scope.croppedHeight
-					width: scope.croppedWidth
-					destinationHeight: scope.destinationHeight
-					destinationWidth: scope.destinationWidth
-					filename: scope.filename
-				result.croppedImage = blobArray[0]  if blobArray[0]
-				result.originalImage = blobArray[1]  if blobArray[1]
-				$rootScope.$broadcast "cropme:done", result, "image/#{scope.type}", scope.id
+			sendImageEvent "done"
 
 		scope.$on "cropme:cancel", scope.cancel
 		scope.$on "cropme:ok", scope.ok
 		scope.$watch "src", ->
 			if scope.src
 				scope.filename = scope.src
+				loadImage(scope.src, true)  if scope.src.indexOf("data:image") is 0
 				delimit = if scope.src.match(/\?/) then "&" else "?"
 				loadImage "#{scope.src}#{delimit}crossOrigin"
+		debouncedSendImageEvent = debounce sendImageEvent, 300

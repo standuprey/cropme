@@ -2,6 +2,7 @@ cropme Angular Module
 ========================
 
 Drag and drop or select an image, crop it and get the blob, that you can use to upload wherever and however you want
+[Demo here!](http://standupweb.net/cropmedemo)
 
 Install
 -------
@@ -112,6 +113,14 @@ The blob will be sent through an event, to catch it inside your app, you can do 
 
 		$scope.$on("cropme:done", function(ev, result, canvasEl) { /* do something */ });
 
+The blob will be sent also through a progress event when you move or resize the area:
+
+		$scope.$on("cropme:progress", function(ev, result, canvasEl) { /* do something */ });
+
+The module will also send an event when a picture has been chosen by the user:
+
+		$scope.$on("cropme:loaded", function(ev, width, height) { /* do something when the image is loaded */ });
+
 Where result is an object with the following keys:
 
 		x: x position of the crop image relative to the original image
@@ -124,9 +133,6 @@ Where result is an object with the following keys:
 		destinationWidth: width of the cropped image
 		filename: name of the original file
 
-Also cropme will send an event when a picture has been chosen by the user, so you can do something like
-
-		$scope.$on("cropme:loaded", function(ev, width, height) { /* do something when the image is loaded */ });
 
 Events Received
 ---------------
@@ -153,4 +159,20 @@ So, now, how do I send this image to my server?
 		});
 
 
+Demo
+----
+
+To run it locally, run:
+`npm install & bower install`
+build the project
+`grunt`
+then go to the demo folder
+`cd demo`
+and install npm and bower again here
+`npm install & bower install`
+and start the demo
+`grunt serve`
+You should be able to then go on your browser at localhost:9001
+
+If you want to try and see what this is all about:
 [Demo here!](http://standupweb.net/cropmedemo)
