@@ -327,7 +327,9 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		scope.$watch "src", ->
 			if scope.src
 				scope.filename = scope.src
-				loadImage(scope.src, true)  if scope.src.indexOf("data:image") is 0
-				delimit = if scope.src.match(/\?/) then "&" else "?"
-				loadImage "#{scope.src}#{delimit}crossOrigin"
+				if scope.src.indexOf("data:image") is 0
+					loadImage(scope.src, true)
+				else
+					delimit = if scope.src.match(/\?/) then "&" else "?"
+					loadImage "#{scope.src}#{delimit}crossOrigin"
 		debouncedSendImageEvent = debounce sendImageEvent, 300
