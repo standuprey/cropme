@@ -428,10 +428,11 @@
           if (scope.src) {
             scope.filename = scope.src;
             if (scope.src.indexOf("data:image") === 0) {
-              loadImage(scope.src, true);
+              return loadImage(scope.src, true);
+            } else {
+              delimit = scope.src.match(/\?/) ? "&" : "?";
+              return loadImage("" + scope.src + delimit + "crossOrigin");
             }
-            delimit = scope.src.match(/\?/) ? "&" : "?";
-            return loadImage("" + scope.src + delimit + "crossOrigin");
           }
         });
         return debouncedSendImageEvent = debounce(sendImageEvent, 300);
