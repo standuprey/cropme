@@ -6,5 +6,5 @@ angular.module("cropmeDemo").controller "MainCtrl", ($scope, $timeout, $sce) ->
 		$scope.ratio = 1
 	, 100
 
-	$scope.$on "cropme:done", (e, blob) ->
-		console.log blob
+	$scope.$on "cropme:done", (e, blob, type, id) ->
+		console.log blob, type, id

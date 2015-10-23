@@ -156,7 +156,7 @@
                   return scope.dropError = errors.join("<br/>");
                 } else {
                   scope.imgLoaded = true;
-                  $rootScope.$broadcast("cropme:loaded", width, height);
+                  $rootScope.$broadcast("cropme:loaded", width, height, element);
                   sendImageEvent("progress");
                   return startCropping(width, height);
                 }
@@ -322,7 +322,6 @@
           return deferred.promise;
         };
         sendImageEvent = function(eventName) {
-          console.log(eventName);
           scope.croppedWidth = scope.widthCropZone / zoom;
           scope.croppedHeight = scope.heightCropZone / zoom;
           return $q.all([getCropPromise(), getOriginalPromise()]).then(function(blobArray) {
@@ -342,7 +341,7 @@
             if (blobArray[1]) {
               result.originalImage = blobArray[1];
             }
-            return $rootScope.$broadcast("cropme:" + eventName, result, "image/" + scope.type, scope.id);
+            return $rootScope.$broadcast("cropme:" + eventName, result, element);
           });
         };
         debounce = function(func, wait, immediate) {
@@ -405,7 +404,10 @@
         scope.deselect = function() {
           return draggingFn = null;
         };
-        scope.cancel = function($event) {
+        scope.cancel = function($event, id) {
+          if (id && element.attr('id') !== id) {
+            return;
+          }
           if ($event) {
             $event.preventDefault();
           }

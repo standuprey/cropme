@@ -151,7 +151,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 							scope.dropError = errors.join "<br/>"
 						else
 							scope.imgLoaded = true
-							$rootScope.$broadcast "cropme:loaded", width, height
+							$rootScope.$broadcast "cropme:loaded", width, height, element
 							sendImageEvent "progress"
 							startCropping width, height
 				img.crossOrigin = "anonymous"  unless base64Src
@@ -255,7 +255,6 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			deferred.promise
 
 		sendImageEvent = (eventName) ->
-			console.log eventName
 			scope.croppedWidth = scope.widthCropZone / zoom
 			scope.croppedHeight = scope.heightCropZone / zoom
 			$q.all([getCropPromise(), getOriginalPromise()]).then (blobArray) ->
@@ -269,7 +268,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 					filename: scope.filename
 				result.croppedImage = blobArray[0]  if blobArray[0]
 				result.originalImage = blobArray[1]  if blobArray[1]
-				$rootScope.$broadcast "cropme:#{eventName}", result, "image/#{scope.type}", scope.id
+				$rootScope.$broadcast "cropme:#{eventName}", result, element
 		debounce = (func, wait, immediate) ->
 			timeout = undefined
 			->
@@ -310,7 +309,8 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				draggingFn = null
 
 		scope.deselect = -> draggingFn = null
-		scope.cancel = ($event) ->
+		scope.cancel = ($event, id) ->
+			return  if id and element.attr('id') isnt id
 			$event.preventDefault() if $event
 			scope.dropText = "Drop files here"
 			scope.dropClass = ""
