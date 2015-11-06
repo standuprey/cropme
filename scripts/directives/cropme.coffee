@@ -95,6 +95,11 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.yCropZone = Math.round (scope.height - scope.heightCropZone) / 2
 
 		scope.checkScopeVariables = ->
+			unless scope.width?
+				scope.width = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('width'), 10);
+			if !scope.height? and !scope.ratio? and !scope.destinationHeight?
+				scope.height = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('height'), 10);
+				scope.ratio = scope.height / scope.width
 			if scope.destinationHeight and not scope.ratio
 				scope.ratio = scope.destinationHeight / scope.destinationWidth
 			else if scope.ratio

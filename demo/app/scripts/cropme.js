@@ -72,6 +72,13 @@
           return scope.yCropZone = Math.round((scope.height - scope.heightCropZone) / 2);
         };
         scope.checkScopeVariables = function() {
+          if (scope.width == null) {
+            scope.width = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('width'), 10);
+          }
+          if ((scope.height == null) && (scope.ratio == null) && (scope.destinationHeight == null)) {
+            scope.height = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('height'), 10);
+            scope.ratio = scope.height / scope.width;
+          }
           if (scope.destinationHeight && !scope.ratio) {
             scope.ratio = scope.destinationHeight / scope.destinationWidth;
           } else if (scope.ratio) {
