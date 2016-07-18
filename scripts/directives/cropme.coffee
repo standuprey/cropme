@@ -15,6 +15,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		<div
 			class="step-1"
 			ng-show="checkScopeVariables() && state == 'step-1'"
+			ng-click="browseFiles()"
 			ng-style="{'width': width + 'px', 'height': height + 'px'}">
 			<dropbox ng-class="dropClass"></dropbox>
 			<div class="cropme-error" ng-bind-html="dropError"></div>
@@ -22,12 +23,11 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				<input type="file"/>
 				<div
 					class="cropme-button"
-					ng-class="{deactivated: dragOver}"
-					ng-click="browseFiles()">
-						Browse picture
+					ng-class="{deactivated: dragOver, 'cropme-button-decorated': !isHandheld}">
+						{{browseLabel}}
 				</div>
-				<div class="cropme-or">or</div>
-				<div class="cropme-label" ng-class="iconClass">{{dropText}}</div>
+				<div class="cropme-or" ng-hide="isHandheld">{{orLabel}}</div>
+				<div class="cropme-label" ng-hide="isHandheld" ng-class="iconClass">{{dropLabel}}</div>
 			</div>
 		</div>
 		<div
@@ -73,9 +73,19 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		id: "@?"
 		okLabel: "@?"
 		cancelLabel: "@?"
+		dropLabel: "@?"
+		browseLabel: "@?"
+		orLabel: "@?"
+		useFrontCamera: "@?"
 	link: (scope, element, attributes) ->
-		scope.dropText = "Drop picture here"
+		scope.type ||= "png"
+		scope.okLabel ||= "Ok"
+		scope.cancelLabel ||= "Cancel"
+		scope.dropLabel ||= "Drop picture here"
+		scope.browseLabel ||= "Browse picture"
+		scope.orLabel ||= "or"
 		scope.state = "step-1"
+		scope.isHandheld = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 		draggingFn = null
 		grabbedBorder = null
 		heightWithImage = null
@@ -106,9 +116,6 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				scope.destinationHeight = scope.destinationWidth * scope.ratio
 			if scope.ratio and not scope.height
 				scope.height = scope.width * scope.ratio
-			scope.type ||= "png"
-			scope.okLabel ||= "Ok"
-			scope.cancelLabel ||= "Cancel"
 			true
 
 		imageAreaEl = element[0].getElementsByClassName("step-2")[0]
@@ -116,11 +123,17 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		$input = element.find("input")
 		$input.bind "change", ->
 			file = @files[0]
-			scope.$apply -> scope.setFiles file
+			scope.setFiles file
 		$input.bind "click", (e) ->
 			e.stopPropagation()
 			$input.val ""
-		scope.browseFiles = -> $input[0].click()
+		scope.browseFiles = ->
+			if navigator.camera
+				navigator.camera.getPicture loadImage, addPictureFailure,
+					destinationType: navigator.Camera.DestinationType.DATA_URL
+					sourceType: navigator.Camera.PictureSourceType.PHOTOLIBRARY
+			else
+				$input[0].click()
 		scope.setFiles = (file) ->
 			unless file.type.match /^image\//
 				return scope.dropError = "Wrong file type, please select an image."
@@ -128,9 +141,13 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.dropError = ""
 			reader = new FileReader
 			reader.onload = (e) ->
-				scope.$apply -> loadImage e.target.result, true
+				loadImage e.target.result
 			reader.readAsDataURL(file);
-		loadImage = (src, base64Src = false) ->
+		addPictureFailure = ->
+			scope.$apply ->
+				scope.cancel()
+				scope.dropError = "Failed to get a picture from your gallery"
+		loadImage = (src, base64Src = true) ->
 			return unless src
 			scope.state = "step-2"
 			if src isnt scope.imgSrc
@@ -317,7 +334,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		scope.cancel = ($event, id) ->
 			return  if id and element.attr('id') isnt id
 			$event.preventDefault() if $event
-			scope.dropText = "Drop files here"
+			scope.dropLabel = "Drop files here"
 			scope.dropClass = ""
 			scope.state = "step-1"
 			delete scope.imgSrc
@@ -333,8 +350,8 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			if scope.src
 				scope.filename = scope.src
 				if scope.src.indexOf("data:image") is 0
-					loadImage(scope.src, true)
+					loadImage scope.src
 				else
 					delimit = if scope.src.match(/\?/) then "&" else "?"
-					loadImage "#{scope.src}#{delimit}crossOrigin"
+					loadImage "#{scope.src}#{delimit}crossOrigin", false
 		debouncedSendImageEvent = debounce sendImageEvent, 300

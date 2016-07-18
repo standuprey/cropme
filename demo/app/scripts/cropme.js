@@ -28,7 +28,7 @@
     minHeight = 100;
     borderSensitivity = 8;
     return {
-      template: "<div\n	class=\"step-1\"\n	ng-show=\"checkScopeVariables() && state == 'step-1'\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-class=\"{deactivated: dragOver}\"\n			ng-click=\"browseFiles()\">\n				Browse picture\n		</div>\n		<div class=\"cropme-or\">or</div>\n		<div class=\"cropme-label\" ng-class=\"iconClass\">{{dropText}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px', cursor: colResizePointer}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mouseleave=\"deselect()\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\" ng-show=\"imgLoaded\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': (widthCropZone - 2) + 'px', 'height': (heightCropZone - 2) + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button id=\"cropme-cancel\" ng-click=\"cancel($event)\">{{cancelLabel}}</button>\n	<button id=\"cropme-ok\" ng-click=\"ok($event)\">{{okLabel}}</button>\n</div>\n<canvas\n	width=\"{{destinationWidth}}\"\n	height=\"{{destinationHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
+      template: "<div\n	class=\"step-1\"\n	ng-show=\"checkScopeVariables() && state == 'step-1'\"\n	ng-click=\"browseFiles()\"\n	ng-style=\"{'width': width + 'px', 'height': height + 'px'}\">\n	<dropbox ng-class=\"dropClass\"></dropbox>\n	<div class=\"cropme-error\" ng-bind-html=\"dropError\"></div>\n	<div class=\"cropme-file-input\">\n		<input type=\"file\"/>\n		<div\n			class=\"cropme-button\"\n			ng-class=\"{deactivated: dragOver, 'cropme-button-decorated': !isHandheld}\">\n				{{browseLabel}}\n		</div>\n		<div class=\"cropme-or\" ng-hide=\"isHandheld\">{{orLabel}}</div>\n		<div class=\"cropme-label\" ng-hide=\"isHandheld\" ng-class=\"iconClass\">{{dropLabel}}</div>\n	</div>\n</div>\n<div\n	class=\"step-2\"\n	ng-show=\"state == 'step-2'\"\n	ng-style=\"{'width': width + 'px', cursor: colResizePointer}\"\n	ng-mousemove=\"mousemove($event)\"\n	ng-mouseleave=\"deselect()\">\n	<img ng-src=\"{{imgSrc}}\" ng-style=\"{'width': width + 'px'}\" ng-show=\"imgLoaded\"/>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}\"></div>\n	<div class=\"overlay-tile\" ng-style=\"{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}\"></div>\n	<div class=\"overlay-border\" ng-style=\"{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': (widthCropZone - 2) + 'px', 'height': (heightCropZone - 2) + 'px'}\"></div>\n</div>\n<div class=\"cropme-actions\" ng-show=\"state == 'step-2'\">\n	<button id=\"cropme-cancel\" ng-click=\"cancel($event)\">{{cancelLabel}}</button>\n	<button id=\"cropme-ok\" ng-click=\"ok($event)\">{{okLabel}}</button>\n</div>\n<canvas\n	width=\"{{destinationWidth}}\"\n	height=\"{{destinationHeight}}\"\n	ng-style=\"{'width': destinationWidth + 'px', 'height': destinationHeight + 'px'}\">\n</canvas>",
       restrict: "E",
       priority: 99,
       scope: {
@@ -44,12 +44,22 @@
         sendCropped: "@?",
         id: "@?",
         okLabel: "@?",
-        cancelLabel: "@?"
+        cancelLabel: "@?",
+        dropLabel: "@?",
+        browseLabel: "@?",
+        orLabel: "@?",
+        useFrontCamera: "@?"
       },
       link: function(scope, element, attributes) {
-        var $input, canvasEl, checkBoundsAndSendProgressEvent, checkHRatio, checkVRatio, ctx, debounce, debouncedSendImageEvent, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendImageEvent, sendOriginal, startCropping, zoom;
-        scope.dropText = "Drop picture here";
+        var $input, addPictureFailure, canvasEl, checkBoundsAndSendProgressEvent, checkHRatio, checkVRatio, ctx, debounce, debouncedSendImageEvent, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, sendCropped, sendImageEvent, sendOriginal, startCropping, zoom;
+        scope.type || (scope.type = "png");
+        scope.okLabel || (scope.okLabel = "Ok");
+        scope.cancelLabel || (scope.cancelLabel = "Cancel");
+        scope.dropLabel || (scope.dropLabel = "Drop picture here");
+        scope.browseLabel || (scope.browseLabel = "Browse picture");
+        scope.orLabel || (scope.orLabel = "or");
         scope.state = "step-1";
+        scope.isHandheld = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         draggingFn = null;
         grabbedBorder = null;
         heightWithImage = null;
@@ -87,9 +97,6 @@
           if (scope.ratio && !scope.height) {
             scope.height = scope.width * scope.ratio;
           }
-          scope.type || (scope.type = "png");
-          scope.okLabel || (scope.okLabel = "Ok");
-          scope.cancelLabel || (scope.cancelLabel = "Cancel");
           return true;
         };
         imageAreaEl = element[0].getElementsByClassName("step-2")[0];
@@ -100,16 +107,21 @@
         $input.bind("change", function() {
           var file;
           file = this.files[0];
-          return scope.$apply(function() {
-            return scope.setFiles(file);
-          });
+          return scope.setFiles(file);
         });
         $input.bind("click", function(e) {
           e.stopPropagation();
           return $input.val("");
         });
         scope.browseFiles = function() {
-          return $input[0].click();
+          if (navigator.camera) {
+            return navigator.camera.getPicture(loadImage, addPictureFailure, {
+              destinationType: navigator.Camera.DestinationType.DATA_URL,
+              sourceType: navigator.Camera.PictureSourceType.PHOTOLIBRARY
+            });
+          } else {
+            return $input[0].click();
+          }
         };
         scope.setFiles = function(file) {
           var reader;
@@ -120,16 +132,20 @@
           scope.dropError = "";
           reader = new FileReader;
           reader.onload = function(e) {
-            return scope.$apply(function() {
-              return loadImage(e.target.result, true);
-            });
+            return loadImage(e.target.result);
           };
           return reader.readAsDataURL(file);
+        };
+        addPictureFailure = function() {
+          return scope.$apply(function() {
+            scope.cancel();
+            return scope.dropError = "Failed to get a picture from your gallery";
+          });
         };
         loadImage = function(src, base64Src) {
           var img;
           if (base64Src == null) {
-            base64Src = false;
+            base64Src = true;
           }
           if (!src) {
             return;
@@ -418,7 +434,7 @@
           if ($event) {
             $event.preventDefault();
           }
-          scope.dropText = "Drop files here";
+          scope.dropLabel = "Drop files here";
           scope.dropClass = "";
           scope.state = "step-1";
           delete scope.imgSrc;
@@ -437,10 +453,10 @@
           if (scope.src) {
             scope.filename = scope.src;
             if (scope.src.indexOf("data:image") === 0) {
-              return loadImage(scope.src, true);
+              return loadImage(scope.src);
             } else {
               delimit = scope.src.match(/\?/) ? "&" : "?";
-              return loadImage("" + scope.src + delimit + "crossOrigin");
+              return loadImage("" + scope.src + delimit + "crossOrigin", false);
             }
           }
         });

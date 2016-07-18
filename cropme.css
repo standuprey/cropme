@@ -2,13 +2,12 @@
 cropme {
   display: block;
   width: 100%;
-  height: 100%;
   -moz-user-select: -moz-none;
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select: none;
 }
-/* line 24, styles/cropme.scss */
+/* line 23, styles/cropme.scss */
 cropme .step-1 {
   font-family: helvetica, arial, sans-serif;
   position: relative;
@@ -21,14 +20,14 @@ cropme .step-1 {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
-/* line 34, styles/cropme.scss */
+/* line 33, styles/cropme.scss */
 cropme .cropme-file-input {
   position: absolute;
   top: 20%;
   left: 50%;
   width: 0;
 }
-/* line 40, styles/cropme.scss */
+/* line 39, styles/cropme.scss */
 cropme input[type=file] {
   opacity: 0;
   position: absolute;
@@ -36,32 +35,36 @@ cropme input[type=file] {
   left: 0;
   right: 0;
 }
-/* line 47, styles/cropme.scss */
+/* line 46, styles/cropme.scss */
 cropme .cropme-button {
   font-weight: bold;
   cursor: pointer;
   text-align: center;
-  background: #3ba5b3;
-  color: #fff;
+  color: #444;
   height: 50px;
   width: 250px;
   margin-left: -125px;
   line-height: 50px;
-  -moz-box-shadow: #ccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
-  -webkit-box-shadow: #ccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
-  box-shadow: #ccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
 }
-/* line 58, styles/cropme.scss */
-cropme .cropme-button:hover {
-  background: #3799a6;
-  color: #e6fafc;
-}
-/* line 62, styles/cropme.scss */
+/* line 55, styles/cropme.scss */
 cropme .cropme-button.deactivated {
   opacity: 0.5;
   pointer-events: none;
 }
-/* line 67, styles/cropme.scss */
+/* line 60, styles/cropme.scss */
+cropme .cropme-button-decorated {
+  color: #fff;
+  background: #3ba5b3;
+  -moz-box-shadow: #ccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
+  -webkit-box-shadow: #ccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
+  box-shadow: #ccc 2px 2px 1px 0, #328d99 0 0 2px 2px inset;
+}
+/* line 64, styles/cropme.scss */
+cropme .cropme-button-decorated:hover {
+  background: #3799a6;
+  color: #e6fafc;
+}
+/* line 69, styles/cropme.scss */
 cropme .cropme-or {
   pointer-events: none;
   text-align: center;
@@ -70,7 +73,7 @@ cropme .cropme-or {
   width: 20px;
   margin-left: -10px;
 }
-/* line 75, styles/cropme.scss */
+/* line 77, styles/cropme.scss */
 cropme .cropme-label {
   margin-top: 25px;
   width: 150px;
@@ -79,14 +82,14 @@ cropme .cropme-label {
   text-align: center;
   color: #444;
 }
-/* line 83, styles/cropme.scss */
+/* line 85, styles/cropme.scss */
 cropme .cropme-error {
   margin-top: 10px;
   text-align: center;
   color: #da4b3e;
   position: relative;
 }
-/* line 89, styles/cropme.scss */
+/* line 91, styles/cropme.scss */
 cropme dropbox {
   display: block;
   position: absolute;
@@ -95,40 +98,40 @@ cropme dropbox {
   right: 0;
   bottom: 0;
 }
-/* line 96, styles/cropme.scss */
+/* line 98, styles/cropme.scss */
 cropme dropbox.not-available {
   background-color: #fff0f0;
 }
-/* line 99, styles/cropme.scss */
+/* line 101, styles/cropme.scss */
 cropme dropbox.over {
   background-color: #e5ffea;
 }
-/* line 102, styles/cropme.scss */
+/* line 104, styles/cropme.scss */
 cropme dropbox.loading {
   background-color: #aaffaa;
 }
-/* line 106, styles/cropme.scss */
+/* line 108, styles/cropme.scss */
 cropme .overlay-tile {
   position: absolute;
   opacity: 0.5;
   background-color: #000;
 }
-/* line 111, styles/cropme.scss */
+/* line 113, styles/cropme.scss */
 cropme .overlay-border {
   position: absolute;
   border: 2px solid #328d99;
 }
-/* line 115, styles/cropme.scss */
+/* line 117, styles/cropme.scss */
 cropme .step-2 {
   position: relative;
   cursor: move;
   overflow: hidden;
 }
-/* line 120, styles/cropme.scss */
+/* line 122, styles/cropme.scss */
 cropme img {
   float: left;
 }
-/* line 121, styles/cropme.scss */
+/* line 123, styles/cropme.scss */
 cropme canvas {
   display: none;
 }

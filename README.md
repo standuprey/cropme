@@ -4,6 +4,8 @@ cropme Angular Module
 Drag and drop or select an image, crop it and get the blob, that you can use to upload wherever and however you want
 [Demo here!](http://standupweb.net/cropmedemo)
 
+From version 0.5 on, it will try to use [cordova-plugin-camera](https://github.com/apache/cordova-plugin-camera) if available
+
 Install
 -------
 
@@ -15,7 +17,7 @@ Copy the cropme.js and cropme.css files into your project and add the following 
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
 
-		"angular-cropme": "~0.3.6"
+		"angular-cropme": "~0.5.0"
 
 Or simply run
 
@@ -72,7 +74,7 @@ Set the height of the container. The image to be cropped cannot be less than thi
 #### icon-class: (optional)
 CSS class of the icon to be set in the middle of the drop box
 #### type (optional)
-Valid values are 'png' or 'jpeg' (might work with webm too, haven't tried it)
+Valid values are 'png' or 'jpeg'. Might work with webm too, haven't tried it. (default: "png")
 #### destination-width (optional)
 Set the target (cropped) picture width.
 		destination-width="250"
@@ -105,6 +107,12 @@ Add id to cropme to tell which cropme element sent the done/ loaded event
 Label for the ok button (default: "Ok")
 #### cancel-label
 Label for the cancel button (default: "Cancel")
+#### browseLabel
+label for the browse picture button (default: "Browse picture")
+#### dropLabel
+label to replace "Drop picture here", not used on handheld devices (default: "Drop picture here")
+#### orLabel
+string to replace "or", not used on handheld devices (default: "or")
 
 Events Sent
 ----------
