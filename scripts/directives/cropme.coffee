@@ -36,7 +36,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			ng-style="{'width': width + 'px', cursor: colResizePointer}"
 			ng-mousemove="mousemove($event)"
 			ng-mouseleave="deselect()">
-			<img ng-src="{{imgSrc}}" ng-style="{'width': width + 'px'}" ng-show="imgLoaded"/>
+			<img crossOrigin="Anonymous" ng-src="{{imgSrc}}" ng-style="{'width': width + 'px'}" ng-show="imgLoaded"/>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}"></div>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}"></div>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}"></div>
@@ -45,7 +45,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			<div class="overlay-tile" ng-style="{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}"></div>
 			<div class="overlay-tile" ng-style="{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}"></div>
 			<div class="overlay-tile" ng-style="{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
-			<div class="overlay-border" ng-style="{'top': (yCropZone - 2) + 'px', 'left': (xCropZone - 2) + 'px', 'width': (widthCropZone - 2) + 'px', 'height': (heightCropZone - 2) + 'px'}"></div>
+			<div class="overlay-border" ng-style="{'top': yCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
 		</div>
 		<div class="cropme-actions" ng-show="state == 'step-2'">
 			<button id="cropme-cancel" ng-click="cancel($event)">{{cancelLabel}}</button>
@@ -76,7 +76,6 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		dropLabel: "@?"
 		browseLabel: "@?"
 		orLabel: "@?"
-		useFrontCamera: "@?"
 	link: (scope, element, attributes) ->
 		scope.type ||= "png"
 		scope.okLabel ||= "Ok"
@@ -99,13 +98,23 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 		startCropping = (imageWidth, imageHeight) ->
 			zoom = scope.width / imageWidth
 			heightWithImage = imageHeight * zoom
-			scope.widthCropZone = Math.round scope.destinationWidth * zoom
-			scope.heightCropZone = Math.round (scope.destinationHeight || minHeight) * zoom
-			scope.xCropZone = Math.round (scope.width - scope.widthCropZone) / 2
-			scope.yCropZone = Math.round (scope.height - scope.heightCropZone) / 2
+			if scope.destinationWidth / scope.destinationHeight > scope.width / heightWithImage
+				scope.widthCropZone = scope.width
+				scope.heightCropZone = Math.round(scope.width * scope.destinationHeight / scope.destinationWidth)
+				scope.xCropZone = 0
+				scope.yCropZone = Math.round (heightWithImage - scope.heightCropZone) / 2
+			else
+				scope.widthCropZone = Math.round(heightWithImage * scope.destinationWidth / scope.destinationHeight)
+				scope.heightCropZone = heightWithImage
+				scope.xCropZone = Math.round (scope.width - scope.widthCropZone) / 2
+				scope.yCropZone = 0
 
 		scope.checkScopeVariables = ->
-			unless scope.width?
+			scope.destinationHeight = parseInt(scope.destinationHeight, 10) if scope.destinationHeight
+			scope.destinationWidth = parseInt(scope.destinationWidth, 10) if scope.destinationWidth
+			if scope.width?
+				scope.width = parseInt scope.width, 10
+			else
 				scope.width = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('width'), 10);
 			if !scope.height? and !scope.ratio? and !scope.destinationHeight?
 				scope.height = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('height'), 10);
@@ -129,14 +138,16 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			$input.val ""
 		scope.browseFiles = ->
 			if navigator.camera
-				navigator.camera.getPicture loadImage, addPictureFailure,
-					destinationType: navigator.Camera.DestinationType.DATA_URL
-					sourceType: navigator.Camera.PictureSourceType.PHOTOLIBRARY
+				navigator.camera.getPicture addTypeAndLoadImage, addPictureFailure,
+					destinationType: navigator.camera.DestinationType.DATA_URL
+					sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY
 			else
 				$input[0].click()
 		scope.setFiles = (file) ->
 			unless file.type.match /^image\//
-				return scope.dropError = "Wrong file type, please select an image."
+				return scope.$apply ->
+					scope.cancel()
+					scope.dropError = "Wrong file type, please select an image."
 			scope.filename = file.name
 			scope.dropError = ""
 			reader = new FileReader
@@ -147,6 +158,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.$apply ->
 				scope.cancel()
 				scope.dropError = "Failed to get a picture from your gallery"
+		addTypeAndLoadImage = (src) -> loadImage "data:image/jpeg;base64," + src
 		loadImage = (src, base64Src = true) ->
 			return unless src
 			scope.state = "step-2"
@@ -231,7 +243,14 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 					scope.heightCropZone = heightWithImage
 					scope.yCropZone = 0
 					checkVRatio()
+			roundBounds()
 			debouncedSendImageEvent "progress"
+
+		roundBounds = ->
+			scope.yCropZone = Math.round scope.yCropZone
+			scope.xCropZone = Math.round scope.xCropZone
+			scope.widthCropZone = Math.round scope.widthCropZone
+			scope.heightCropZone = Math.round scope.heightCropZone
 
 		isNearBorders = (coords) ->
 			offset = elOffset()
@@ -337,6 +356,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			scope.dropLabel = "Drop files here"
 			scope.dropClass = ""
 			scope.state = "step-1"
+			$rootScope.$broadcast "cropme:canceled"
 			delete scope.imgSrc
 			delete scope.filename
 

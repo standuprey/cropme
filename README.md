@@ -17,7 +17,7 @@ Copy the cropme.js and cropme.css files into your project and add the following 
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
 
-		"angular-cropme": "~0.5.0"
+		"angular-cropme": "~1.0.0"
 
 Or simply run
 
@@ -71,7 +71,7 @@ Note: all local scope properties are defined using "@", meaning it accesses the 
 Set the width of the crop space container. Omit the width to make the box fit the size of the parent container. The image you want to crop will be reduced to this width and the directive will throw an error if the image to be cropped is smaller than this width.
 #### height (optional, default: 300px)
 Set the height of the container. The image to be cropped cannot be less than this measurement.
-#### icon-class: (optional)
+#### icon-class (optional)
 CSS class of the icon to be set in the middle of the drop box
 #### type (optional)
 Valid values are 'png' or 'jpeg'. Might work with webm too, haven't tried it. (default: "png")
@@ -124,6 +124,10 @@ The blob will be sent through an event, to catch it inside your app, you can do 
 The blob will be sent also through a progress event when you move or resize the area:
 
 		$scope.$on("cropme:progress", function(ev, result, cropmeEl) { /* do something */ });
+
+If the user click the cancel button the cropme:canceled event will be sent
+
+		$scope.$on("cropme:canceled", function() { /* do something */ });
 
 The module will also send an event when a picture has been chosen by the user:
 
