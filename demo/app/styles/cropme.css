@@ -120,18 +120,21 @@ cropme .overlay-tile {
 cropme .overlay-border {
   position: absolute;
   border: 2px solid #328d99;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
-/* line 117, styles/cropme.scss */
+/* line 118, styles/cropme.scss */
 cropme .step-2 {
   position: relative;
   cursor: move;
   overflow: hidden;
 }
-/* line 122, styles/cropme.scss */
+/* line 123, styles/cropme.scss */
 cropme img {
   float: left;
 }
-/* line 123, styles/cropme.scss */
+/* line 124, styles/cropme.scss */
 cropme canvas {
   display: none;
 }

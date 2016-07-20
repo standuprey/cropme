@@ -1,6 +1,6 @@
 {
   "name": "cropme-demo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.1",

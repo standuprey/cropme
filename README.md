@@ -17,7 +17,7 @@ Copy the cropme.js and cropme.css files into your project and add the following 
 
 Alternatively, if you're using bower, you can add this to your component.json (or bower.json):
 
-		"angular-cropme": "~1.0.1"
+		"angular-cropme": "~1.0.2"
 
 Or simply run
 

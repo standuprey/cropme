@@ -113,6 +113,7 @@ cropme {
 	.overlay-border {
 		position: absolute;
 		border: 2px solid $color;
+		@include box-sizing(border-box);
 	}
 	.step-2 {
 		position: relative;

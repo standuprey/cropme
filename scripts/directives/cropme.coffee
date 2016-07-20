@@ -45,7 +45,7 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 			<div class="overlay-tile" ng-style="{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}"></div>
 			<div class="overlay-tile" ng-style="{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}"></div>
 			<div class="overlay-tile" ng-style="{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
-			<div class="overlay-border" ng-style="{'top': yCropZone + 'px', 'left': xCropZone + 'px', 'width': (widthCropZone - 2) + 'px', 'height': (heightCropZone - 2) + 'px'}"></div>
+			<div class="overlay-border" ng-style="{'top': yCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
 		</div>
 		<div class="cropme-actions" ng-show="state == 'step-2'">
 			<button id="cropme-cancel" ng-click="cancel($event)">{{cancelLabel}}</button>
