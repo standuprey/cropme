@@ -1,12 +1,12 @@
 ###*
  # @ngdoc directive
  # @name cropme
- # @requires $swipe, $window, $timeout, $rootScope, elementOffset, canvasToBlob
+ # @requires superswipe, $window, $timeout, $rootScope, elementOffset, canvasToBlob
  # @description
  # Main directive for the cropme module, see readme.md for the different options and example
  #
 ###
-angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootScope, $q, elementOffset, canvasToBlob) ->
+angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $rootScope, $q, elementOffset, canvasToBlob) ->
 
 	minHeight = 100 # if destinationHeight has not been defined, we need a default height for the crop zone
 	borderSensitivity = 8 # grab area size around the borders in pixels
@@ -45,7 +45,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 			<div class="overlay-tile" ng-style="{'top': yCropZone + heightCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'bottom': 0}"></div>
 			<div class="overlay-tile" ng-style="{'top': yCropZone + heightCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'bottom': 0}"></div>
 			<div class="overlay-tile" ng-style="{'top': yCropZone + 'px', 'left': 0, 'width': xCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
-			<div class="overlay-border" ng-style="{'top': yCropZone + 'px', 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': heightCropZone + 'px'}"></div>
+			<div class="overlay-border" ng-style="{'top': yCropZone + 'px', 'left': xCropZone + 'px', 'width': (widthCropZone - 2) + 'px', 'height': (heightCropZone - 2) + 'px'}"></div>
 		</div>
 		<div class="cropme-actions" ng-show="state == 'step-2'">
 			<button id="cropme-cancel" ng-click="cancel($event)">{{cancelLabel}}</button>
@@ -336,7 +336,7 @@ angular.module("cropme").directive "cropme", ($swipe, $window, $timeout, $rootSc
 				when 'left' then 'sw-resize'
 				else 'move'
 
-		$swipe.bind angular.element(element[0].getElementsByClassName('step-2')[0]),
+		superswipe.bind angular.element(element[0].getElementsByClassName('step-2')[0]),
 			'start': (coords) ->
 				grabbedBorder = isNearBorders coords
 				if grabbedBorder
