@@ -36,7 +36,7 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 			ng-style="{'width': width + 'px', cursor: colResizePointer}"
 			ng-mousemove="mousemove($event)"
 			ng-mouseleave="deselect()">
-			<img crossOrigin="Anonymous" ng-src="{{imgSrc}}" ng-style="{'width': width + 'px'}" ng-show="imgLoaded"/>
+			<img crossOrigin="Anonymous" ng-src="{{imgSrc}}" ng-style="{'width': width ? width + 'px' : 'auto', 'height': height ? height + 'px' : 'auto'}" ng-show="imgLoaded"/>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': 0, 'width': xCropZone + 'px', 'height': yCropZone + 'px'}"></div>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': xCropZone + 'px', 'width': widthCropZone + 'px', 'height': yCropZone + 'px'}"></div>
 			<div class="overlay-tile" ng-style="{'top': 0, 'left': xCropZone + widthCropZone + 'px', 'right': 0, 'height': yCropZone + 'px'}"></div>
@@ -112,9 +112,11 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 		scope.checkScopeVariables = ->
 			scope.destinationHeight = parseInt(scope.destinationHeight, 10) if scope.destinationHeight
 			scope.destinationWidth = parseInt(scope.destinationWidth, 10) if scope.destinationWidth
+			if scope.height?
+				scope.height = parseInt scope.height, 10
 			if scope.width?
 				scope.width = parseInt scope.width, 10
-			else
+			else unless scope.height
 				scope.width = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('width'), 10);
 			if !scope.height? and !scope.ratio? and !scope.destinationHeight?
 				scope.height = parseInt(window.getComputedStyle(element.parent()[0]).getPropertyValue('height'), 10);
@@ -174,6 +176,7 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 					width = img.width
 					height = img.height
 					errors = []
+					scope.width = scope.height * width / height  unless scope.width?
 					if width < scope.width
 						errors.push "The image you dropped has a width of #{width}, but the minimum is #{scope.width}."
 					minHeight = Math.min scope.height, scope.destinationHeight

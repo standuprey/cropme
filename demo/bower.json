@@ -1,7 +1,7 @@
 {
   "author": "Stanislas Duprey",
   "name": "cropme-demo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {
     "angular": "^1.2.10",
     "angular-sanitize": "^1.2.10",
