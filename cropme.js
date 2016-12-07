@@ -143,6 +143,10 @@
         scope.setFiles = function(file) {
           var reader;
           if (!file.type.match(/^image\//)) {
+            if (scope.$$phase || $rootScope.$$phase) {
+              scope.cancel();
+              return scope.dropError = "Wrong file type, please select an image.";
+            }
             return scope.$apply(function() {
               scope.cancel();
               return scope.dropError = "Wrong file type, please select an image.";
