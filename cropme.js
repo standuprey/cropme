@@ -47,7 +47,8 @@
         cancelLabel: "@?",
         dropLabel: "@?",
         browseLabel: "@?",
-        orLabel: "@?"
+        orLabel: "@?",
+        crossOrigin: '@?'
       },
       link: function(scope, element, attributes) {
         var $input, addPictureFailure, addTypeAndLoadImage, canvasEl, checkBoundsAndSendProgressEvent, checkHRatio, checkVRatio, ctx, debounce, debouncedSendImageEvent, dragIt, draggingFn, elOffset, getCropPromise, getOriginalPromise, grabbedBorder, heightWithImage, imageAreaEl, imageEl, isNearBorders, loadImage, moveBorders, moveCropZone, nearHSegment, nearVSegment, roundBounds, sendCropped, sendImageEvent, sendOriginal, startCropping, zoom;
@@ -57,6 +58,7 @@
         scope.dropLabel || (scope.dropLabel = "Drop picture here");
         scope.browseLabel || (scope.browseLabel = "Browse picture");
         scope.orLabel || (scope.orLabel = "or");
+        scope.crossOrigin || (scope.crossOrigin = "true");
         scope.state = "step-1";
         scope.isHandheld = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         draggingFn = null;
@@ -66,6 +68,9 @@
         imageEl = element.find('img')[0];
         canvasEl = element.find("canvas")[0];
         ctx = canvasEl.getContext("2d");
+        if (scope.crossOrigin === "false") {
+          element.find('img').removeAttr("crossOrigin");
+        }
         sendCropped = function() {
           return scope.sendCropped === undefined || scope.sendCropped === "true";
         };
@@ -215,7 +220,7 @@
                 }
               });
             };
-            if (!base64Src) {
+            if (!base64Src && scope.crossOrigin === "true") {
               img.crossOrigin = "anonymous";
             }
             return img.src = src;
@@ -487,14 +492,18 @@
         scope.$on("cropme:cancel", scope.cancel);
         scope.$on("cropme:ok", scope.ok);
         scope.$watch("src", function() {
-          var delimit;
+          var delimit, src;
           if (scope.src) {
             scope.filename = scope.src;
             if (scope.src.indexOf("data:image") === 0) {
               return loadImage(scope.src);
             } else {
               delimit = scope.src.match(/\?/) ? "&" : "?";
-              return loadImage("" + scope.src + delimit + "crossOrigin", false);
+              src = scope.src;
+              if (scope.crossOrign === "true") {
+                src += delimit + "crossOrigin";
+              }
+              return loadImage("" + src, false);
             }
           }
         });
