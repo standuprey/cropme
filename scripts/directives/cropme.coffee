@@ -76,6 +76,7 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 		dropLabel: "@?"
 		browseLabel: "@?"
 		orLabel: "@?"
+		crossOrigin: '@?'
 	link: (scope, element, attributes) ->
 		scope.type ||= "png"
 		scope.okLabel ||= "Ok"
@@ -83,6 +84,7 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 		scope.dropLabel ||= "Drop picture here"
 		scope.browseLabel ||= "Browse picture"
 		scope.orLabel ||= "or"
+		scope.crossOrigin ||= "true"
 		scope.state = "step-1"
 		scope.isHandheld = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 		draggingFn = null
@@ -92,6 +94,8 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 		imageEl = element.find('img')[0]
 		canvasEl = element.find("canvas")[0]
 		ctx = canvasEl.getContext "2d"
+		if scope.crossOrigin == "false"
+			element.find('img').removeAttr("crossOrigin");
 
 		sendCropped = -> scope.sendCropped is `undefined` or scope.sendCropped is "true"
 		sendOriginal = -> scope.sendOriginal is "true"
@@ -191,7 +195,8 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 							$rootScope.$broadcast "cropme:loaded", width, height, element
 							sendImageEvent "progress"
 							startCropping width, height
-				img.crossOrigin = "anonymous"  unless base64Src
+				if not base64Src and scope.crossOrigin == "true"
+					img.crossOrigin = "anonymous"
 				img.src = src
 
 		moveCropZone = (coords) ->
@@ -376,5 +381,8 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 					loadImage scope.src
 				else
 					delimit = if scope.src.match(/\?/) then "&" else "?"
-					loadImage "#{scope.src}#{delimit}crossOrigin", false
+					src = scope.src;
+					if scope.crossOrign == "true"
+						src += delimit + "crossOrigin"
+					loadImage "#{src}", false
 		debouncedSendImageEvent = debounce sendImageEvent, 300
