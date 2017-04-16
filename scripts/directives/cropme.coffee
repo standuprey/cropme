@@ -151,6 +151,9 @@ angular.module("cropme").directive "cropme", (superswipe, $window, $timeout, $ro
 				$input[0].click()
 		scope.setFiles = (file) ->
 			unless file.type.match /^image\//
+				if scope.$$phase or $rootScope.$$phase
+					scope.cancel();
+					return scope.dropError = "Wrong file type, please select an image.";
 				return scope.$apply ->
 					scope.cancel()
 					scope.dropError = "Wrong file type, please select an image."
