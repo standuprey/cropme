@@ -114,6 +114,9 @@ label to replace "Drop picture here", not used on handheld devices (default: "Dr
 #### orLabel
 string to replace "or", not used on handheld devices (default: "or")
 
+#### crossOrigin (optional, used to handle CORS enabled image)
+by default value is **"true"**, if crossOrigin is passed as **"false"** we will not handle CORS enabled images. To know more about CORS enabled image you can go through this link <https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image>
+
 Events Sent
 ----------
 
